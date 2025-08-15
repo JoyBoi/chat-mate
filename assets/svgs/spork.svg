@@ -1,0 +1,111 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#e6e6fa" stroke="#4b0082" stroke-width="3"/>
+  
+  <!-- Vulcan bowl-cut hair -->
+  <path d="M60 70 Q100 60 140 70 L130 90 Q100 80 70 90 Z" fill="#2c3e50"/>
+  <!-- Pointed sideburns -->
+  <polygon points="70,90 65,110 75,100" fill="#2c3e50"/>
+  <polygon points="130,90 135,110 125,100" fill="#2c3e50"/>
+  
+  <!-- Pointed ears -->
+  <polygon points="60,95 55,105 60,115 65,105" fill="#c0c0c0"/>
+  <polygon points="140,95 145,105 140,115 135,105" fill="#c0c0c0"/>
+  
+  <!-- Face -->
+  <ellipse cx="100" cy="110" rx="30" ry="35" fill="#c0c0c0"/>
+  
+  <!-- Eyebrows (slanted upward) -->
+  <path d="M80 90 L95 85" fill="none" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+  <path d="M105 85 L120 90" fill="none" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="90" cy="100" rx="5" ry="7" fill="white"/>
+  <ellipse cx="110" cy="100" rx="5" ry="7" fill="white"/>
+  <circle cx="90" cy="100" r="3" fill="#2c3e50"/>
+  <circle cx="110" cy="100" r="3" fill="#2c3e50"/>
+  
+  <!-- Nose -->
+  <polygon points="100,110 97,120 103,120" fill="#a9a9a9"/>
+  
+  <!-- Mouth (straight line) -->
+  <line x1="90" y1="130" x2="110" y2="130" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Vulcan uniform collar -->
+  <path d="M70 150 L100 140 L130 150 L125 170 Q100 160 75 170 Z" fill="#4b0082"/>
+  
+  <!-- Spoon body -->
+  <ellipse cx="100" cy="175" rx="15" ry="10" fill="#c0c0c0" stroke="#808080" stroke-width="1">
+    <animate attributeName="fill" values="#c0c0c0;#e6e6e6;#c0c0c0" dur="3s" repeatCount="indefinite" />
+  </ellipse>
+  <rect x="97" y="155" width="6" height="20" fill="#c0c0c0" stroke="#808080" stroke-width="1">
+    <animate attributeName="fill" values="#c0c0c0;#e6e6e6;#c0c0c0" dur="3s" repeatCount="indefinite" />
+  </rect>
+  <!-- Metallic shine -->
+  <ellipse cx="95" cy="172" rx="4" ry="2" fill="#ffffff" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2s" repeatCount="indefinite" />
+  </ellipse>
+  
+  <!-- Spork tines -->
+  <line x1="92" y1="175" x2="92" y2="180" stroke="#808080" stroke-width="1">
+    <animate attributeName="stroke" values="#808080;#b0b0b0;#808080" dur="2s" repeatCount="indefinite" />
+  </line>
+  <line x1="96" y1="175" x2="96" y2="182" stroke="#808080" stroke-width="1">
+    <animate attributeName="stroke" values="#808080;#b0b0b0;#808080" dur="2.2s" repeatCount="indefinite" />
+  </line>
+  <line x1="100" y1="175" x2="100" y2="183" stroke="#808080" stroke-width="1">
+    <animate attributeName="stroke" values="#808080;#b0b0b0;#808080" dur="2.4s" repeatCount="indefinite" />
+  </line>
+  <line x1="104" y1="175" x2="104" y2="182" stroke="#808080" stroke-width="1">
+    <animate attributeName="stroke" values="#808080;#b0b0b0;#808080" dur="2.2s" repeatCount="indefinite" />
+  </line>
+  <line x1="108" y1="175" x2="108" y2="180" stroke="#808080" stroke-width="1">
+    <animate attributeName="stroke" values="#808080;#b0b0b0;#808080" dur="2s" repeatCount="indefinite" />
+  </line>
+  
+  <!-- Vulcan hand gesture -->
+  <path d="M140 160 L145 140 L150 160" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+  <path d="M155 160 L160 140 L165 160" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+  <line x1="145" y1="160" x2="145" y2="170" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+  <line x1="150" y1="160" x2="150" y2="170" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+  <line x1="155" y1="160" x2="155" y2="170" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+  <line x1="160" y1="160" x2="160" y2="170" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Starfleet insignia -->
+  <polygon points="100,145 105,155 95,155" fill="#daa520"/>
+  
+  <!-- Logical thought bubble -->
+  <ellipse cx="60" cy="80" rx="15" ry="10" fill="white" stroke="#4b0082" stroke-width="1">
+    <animate attributeName="opacity" values="1;0.7;1" dur="4s" repeatCount="indefinite" />
+  </ellipse>
+  <circle cx="70" cy="90" r="3" fill="white" stroke="#4b0082" stroke-width="1">
+    <animate attributeName="r" values="3;4;3" dur="3s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="75" cy="95" r="2" fill="white" stroke="#4b0082" stroke-width="1">
+    <animate attributeName="r" values="2;3;2" dur="2s" repeatCount="indefinite" />
+  </circle>
+  <!-- Mathematical symbols in thought bubble -->
+  <line x1="55" y1="80" x2="65" y2="80" stroke="#4b0082" stroke-width="1">
+    <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
+  </line>
+  <line x1="60" y1="75" x2="60" y2="85" stroke="#4b0082" stroke-width="1">
+    <animate attributeName="opacity" values="1;0.5;1" dur="2.5s" repeatCount="indefinite" />
+  </line>
+  <path d="M52 83 Q55 78 58 83" fill="none" stroke="#4b0082" stroke-width="1">
+    <animate attributeName="opacity" values="1;0.5;1" dur="3s" repeatCount="indefinite" />
+  </path>
+  
+  <!-- Logical processing indicators -->
+  <circle cx="140" cy="70" r="2" fill="#00ff00" opacity="0.8">
+    <animate attributeName="fill" values="#00ff00;#ffff00;#00ff00" dur="1s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="150" cy="85" r="1" fill="#4b0082" opacity="0.6">
+    <animate attributeName="cy" values="85;80;85" dur="3s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- Vulcan logic aura -->
+  <circle cx="100" cy="100" r="82" fill="none" stroke="#4b0082" stroke-width="1" opacity="0.4">
+    <animate attributeName="r" values="82;87;82" dur="5s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="5s" repeatCount="indefinite" />
+  </circle>
+</svg>

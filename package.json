@@ -1,0 +1,42 @@
+{
+  "name": "chat-mate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "pnpm run --parallel dev",
+    "dev:api": "pnpm --filter @chat-mate/api run start:dev",
+    "dev:app": "pnpm --filter @chat-mate/app run start",
+    "build": "pnpm run --recursive build",
+    "build:api": "pnpm --filter @chat-mate/api run build",
+    "build:app": "pnpm --filter @chat-mate/app run build",
+    "lint": "pnpm run --recursive lint",
+    "test": "pnpm run --recursive test",
+    "clean": "pnpm run --recursive clean",
+    "type-check": "pnpm run --recursive type-check",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.8.1",
+    "@types/node": "^20.0.0",
+    "prettier": "^3.6.2",
+    "typescript": "~5.8.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.14.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "ip": "1.1.9"
+    }
+  },
+  "type": "module",
+  "private": true,
+  "dependencies": {}
+}

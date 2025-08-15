@@ -1,0 +1,144 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#2c3e50" stroke="#e74c3c" stroke-width="3"/>
+  
+  <!-- Deadpool mask/head -->
+  <ellipse cx="100" cy="100" rx="35" ry="40" fill="#e74c3c"/>
+  
+  <!-- Mask seams -->
+  <path d="M100 60 Q90 80 100 100 Q110 80 100 60" fill="none" stroke="#8b0000" stroke-width="2"/>
+  <path d="M100 100 Q90 120 100 140 Q110 120 100 100" fill="none" stroke="#8b0000" stroke-width="2"/>
+  <line x1="65" y1="100" x2="135" y2="100" stroke="#8b0000" stroke-width="2"/>
+  
+  <!-- Eye patches (white) -->
+  <ellipse cx="85" cy="90" rx="12" ry="15" fill="white"/>
+  <ellipse cx="115" cy="90" rx="12" ry="15" fill="white"/>
+  
+  <!-- Eyes (black outline) -->
+  <ellipse cx="85" cy="90" rx="8" ry="12" fill="black"/>
+  <ellipse cx="115" cy="90" rx="8" ry="12" fill="black"/>
+  
+  <!-- Eye expressions (one winking, one normal) -->
+  <ellipse cx="85" cy="90" rx="3" ry="8" fill="white"/>
+  <ellipse cx="115" cy="90" rx="6" ry="10" fill="white"/>
+  <circle cx="115" cy="90" r="3" fill="black"/>
+  
+  <!-- Mouth area -->
+  <ellipse cx="100" cy="115" rx="8" ry="6" fill="#8b0000"/>
+  
+  <!-- Suit body -->
+  <path d="M70 140 Q100 130 130 140 L135 185 Q100 175 65 185 Z" fill="#8b0000"/>
+  
+  <!-- Suit details -->
+  <path d="M80 140 Q100 135 120 140 L115 170 Q100 165 85 170 Z" fill="#e74c3c"/>
+  
+  <!-- Belt -->
+  <rect x="75" y="160" width="50" height="8" fill="#2c3e50"/>
+  <rect x="95" y="158" width="10" height="12" fill="#f39c12"/>
+  
+  <!-- Katanas on back -->
+  <rect x="120" y="80" width="3" height="40" fill="#2c3e50"/>
+  <rect x="125" y="75" width="3" height="40" fill="#2c3e50"/>
+  <!-- Sword handles -->
+  <rect x="118" y="75" width="7" height="8" fill="#8b4513"/>
+  <rect x="123" y="70" width="7" height="8" fill="#8b4513"/>
+  
+  <!-- Pouches -->
+  <rect x="70" y="165" width="8" height="10" fill="#2c3e50"/>
+  <rect x="122" y="165" width="8" height="10" fill="#2c3e50"/>
+  
+  <!-- Fourth wall breaking elements -->
+  <!-- Speech bubble pointing "out" -->
+  <ellipse cx="150" cy="70" rx="20" ry="12" fill="white" stroke="#2c3e50" stroke-width="2"/>
+  <polygon points="135,75 130,80 140,78" fill="white" stroke="#2c3e50" stroke-width="2"/>
+  <text x="145" y="75" font-family="Arial" font-size="8" fill="#2c3e50" text-anchor="middle">Hey You!</text>
+  
+  <!-- Meta reference -->
+  <rect x="40" y="50" width="25" height="15" fill="white" stroke="#2c3e50" stroke-width="1" opacity="0.9"/>
+  <text x="52" y="60" font-family="Arial" font-size="6" fill="#2c3e50" text-anchor="middle">SVG</text>
+  <text x="52" y="67" font-family="Arial" font-size="6" fill="#2c3e50" text-anchor="middle">Avatar</text>
+  
+  <!-- Glitch effects -->
+  <rect x="90" y="85" width="2" height="10" fill="#00ff00" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;0;0.7" dur="0.5s" repeatCount="indefinite" />
+  </rect>
+  <rect x="110" y="95" width="3" height="8" fill="#ff00ff" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0;0.6" dur="0.7s" repeatCount="indefinite" />
+  </rect>
+  
+  <!-- Synthetic/digital elements -->
+  <circle cx="60" cy="120" r="2" fill="#00ff00">
+    <animate attributeName="fill" values="#00ff00;#ff0000;#00ff00" dur="1s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="140" cy="130" r="2" fill="#00ffff">
+    <animate attributeName="fill" values="#00ffff;#ffff00;#00ffff" dur="1.5s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- Digital noise lines -->
+  <line x1="50" y1="110" x2="60" y2="110" stroke="#00ff00" stroke-width="1" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;0;0.5" dur="0.3s" repeatCount="indefinite" />
+  </line>
+  <line x1="140" y1="105" x2="150" y2="105" stroke="#ff00ff" stroke-width="1" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0;0.4" dur="0.4s" repeatCount="indefinite" />
+  </line>
+  
+  <!-- Deadpool logo on chest -->
+  <circle cx="100" cy="155" r="8" fill="#2c3e50"/>
+  <path d="M95 150 Q100 145 105 150 Q100 160 95 150" fill="#e74c3c"/>
+  
+  <!-- Breaking the frame effect -->
+  <rect x="0" y="0" width="200" height="200" fill="none" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,5" opacity="0.6">
+    <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite" />
+  </rect>
+  <!-- Mercenary enhancement elements -->
+  <!-- Tactical display -->
+  <rect x="160" y="30" width="30" height="20" fill="#000000" stroke="#ff0000" stroke-width="0.5" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite" />
+  </rect>
+  <text x="162" y="38" font-family="monospace" font-size="4" fill="#ff0000">
+    <animate attributeName="fill" values="#ff0000;#ff6666;#ff0000" dur="2s" repeatCount="indefinite" />
+    TARGET
+  </text>
+  <text x="162" y="44" font-family="monospace" font-size="3" fill="#00ff00">
+    <animate attributeName="fill" values="#00ff00;#66ff66;#00ff00" dur="2s" repeatCount="indefinite" />
+    LOCKED
+  </text>
+  
+  <!-- Weapon energy effects -->
+  <circle cx="40" cy="90" r="2" fill="#ff4500" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+    <animate attributeName="r" values="2;3;2" dur="1.5s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="160" cy="110" r="1.5" fill="#ff4500" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;0.9;0.5" dur="2s" repeatCount="indefinite" />
+    <animate attributeName="r" values="1.5;2.5;1.5" dur="2s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- Combat readiness indicators -->
+  <rect x="20" y="160" width="4" height="8" fill="#00ff00" opacity="0.8">
+    <animate attributeName="fill" values="#00ff00;#32cd32;#00ff00" dur="1s" repeatCount="indefinite" />
+  </rect>
+  <rect x="25" y="162" width="4" height="6" fill="#ffff00" opacity="0.8">
+    <animate attributeName="fill" values="#ffff00;#ffd700;#ffff00" dur="1.2s" repeatCount="indefinite" />
+  </rect>
+  <rect x="30" y="164" width="4" height="4" fill="#ff0000" opacity="0.8">
+    <animate attributeName="fill" values="#ff0000;#dc143c;#ff0000" dur="0.8s" repeatCount="indefinite" />
+  </rect>
+  
+  <!-- Mercenary aura -->
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#ff0000" stroke-width="0.3" opacity="0.3">
+    <animate attributeName="opacity" values="0.3;0.6;0.3" dur="4s" repeatCount="indefinite" />
+    <animate attributeName="stroke-dasharray" values="0,471;235,236;0,471" dur="4s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- Bullet trail effects -->
+  <path d="M180 70 L175 75 L180 80" fill="none" stroke="#ffd700" stroke-width="1" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="0.5s" repeatCount="indefinite" />
+    <animateTransform attributeName="transform" type="translate" values="0,0;-5,0;-10,0" dur="1s" repeatCount="indefinite" />
+  </path>
+  <path d="M20 130 L25 125 L20 120" fill="none" stroke="#ffd700" stroke-width="1" opacity="0.3">
+    <animate attributeName="opacity" values="0.3;0.7;0.3" dur="0.7s" repeatCount="indefinite" />
+    <animateTransform attributeName="transform" type="translate" values="0,0;5,0;10,0" dur="1.2s" repeatCount="indefinite" />
+  </path>
+  
+</svg>

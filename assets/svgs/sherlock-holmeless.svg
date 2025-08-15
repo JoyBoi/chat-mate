@@ -1,0 +1,195 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#f8f4e6" stroke="#d4af37" stroke-width="3">
+    <animate attributeName="fill" values="#f8f4e6;#faf6e8;#f8f4e6" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="stroke" values="#d4af37;#ffd700;#daa520;#d4af37" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-width" values="3;4;3" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Deerstalker hat -->
+  <path d="M60 70 Q100 50 140 70 L145 85 Q100 65 55 85 Z" fill="#8b4513">
+    <animate attributeName="fill" values="#8b4513;#a0522d;#8b4513" dur="4s" repeatCount="indefinite"/>
+  </path>
+  <path d="M55 85 Q100 75 145 85 L140 95 Q100 85 60 95 Z" fill="#a0522d">
+    <animate attributeName="fill" values="#a0522d;#cd853f;#a0522d" dur="4s" repeatCount="indefinite" begin="0.5s"/>
+  </path>
+  <!-- Hat flaps -->
+  <ellipse cx="50" cy="90" rx="8" ry="12" fill="#8b4513">
+    <animateTransform attributeName="transform" type="rotate" values="0 50 90;-5 50 90;5 50 90;0 50 90" dur="3s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse cx="150" cy="90" rx="8" ry="12" fill="#8b4513">
+    <animateTransform attributeName="transform" type="rotate" values="0 150 90;5 150 90;-5 150 90;0 150 90" dur="3s" repeatCount="indefinite" begin="0.5s"/>
+  </ellipse>
+  
+  <!-- Face -->
+  <ellipse cx="100" cy="110" rx="35" ry="40" fill="#fdbcb4">
+    <animate attributeName="fill" values="#fdbcb4;#ffcccb;#fdbcb4" dur="3s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="scale" values="1;1.01;1" dur="4s" repeatCount="indefinite"/>
+  </ellipse>
+  
+  <!-- Eyes -->
+  <ellipse cx="90" cy="105" rx="6" ry="8" fill="white">
+    <animate attributeName="ry" values="8;6;8" dur="3s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse cx="110" cy="105" rx="6" ry="8" fill="white">
+    <animate attributeName="ry" values="8;6;8" dur="3s" repeatCount="indefinite" begin="0.2s"/>
+  </ellipse>
+  <circle cx="90" cy="105" r="3" fill="#2c3e50">
+    <animate attributeName="r" values="3;2.5;3" dur="2s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;-1,0;1,0;0,0" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="110" cy="105" r="3" fill="#2c3e50">
+    <animate attributeName="r" values="3;2.5;3" dur="2s" repeatCount="indefinite" begin="0.3s"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;1,0;-1,0;0,0" dur="2.5s" repeatCount="indefinite" begin="0.3s"/>
+  </circle>
+  
+  <!-- Magnifying glass -->
+  <circle cx="75" cy="95" r="12" fill="none" stroke="#c0c0c0" stroke-width="2">
+    <animate attributeName="stroke" values="#c0c0c0;#d3d3d3;#a9a9a9;#c0c0c0" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-width" values="2;3;2" dur="2s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="rotate" values="0 75 95;5 75 95;-5 75 95;0 75 95" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="75" cy="95" r="8" fill="rgba(173,216,230,0.3)">
+    <animate attributeName="fill" values="rgba(173,216,230,0.3);rgba(173,216,230,0.5);rgba(173,216,230,0.3)" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="8;8.5;7.5;8" dur="3s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="rotate" values="0 75 95;5 75 95;-5 75 95;0 75 95" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <line x1="85" y1="105" x2="95" y2="115" stroke="#8b4513" stroke-width="3" stroke-linecap="round">
+    <animate attributeName="stroke" values="#8b4513;#a0522d;#8b4513" dur="3s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="rotate" values="0 85 105;5 85 105;-5 85 105;0 85 105" dur="4s" repeatCount="indefinite"/>
+  </line>
+  
+  <!-- Nose -->
+  <polygon points="100,115 95,125 105,125" fill="#f4a460"/>
+  
+  <!-- Mouth -->
+  <path d="M95 135 Q100 140 105 135" fill="none" stroke="#8b4513" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Pipe -->
+  <ellipse cx="115" cy="140" rx="8" ry="4" fill="#8b4513">
+    <animate attributeName="fill" values="#8b4513;#a0522d;#8b4513" dur="3s" repeatCount="indefinite"/>
+  </ellipse>
+  <rect x="123" y="138" width="15" height="4" fill="#654321">
+    <animate attributeName="fill" values="#654321;#8b4513;#654321" dur="3s" repeatCount="indefinite" begin="0.5s"/>
+  </rect>
+  <ellipse cx="138" cy="140" rx="3" ry="2" fill="#2c3e50">
+    <animate attributeName="fill" values="#2c3e50;#34495e;#2c3e50" dur="2s" repeatCount="indefinite"/>
+  </ellipse>
+  
+  <!-- Pipe smoke -->
+  <path d="M140 135 Q145 130 150 135" fill="none" stroke="#d3d3d3" stroke-width="1" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.8;0.2;0" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="d" values="M140 135 Q145 130 150 135;M140 133 Q147 125 154 130;M140 131 Q149 120 158 125;M140 129 Q151 115 162 120" dur="3s" repeatCount="indefinite"/>
+  </path>
+  <path d="M142 133 Q147 128 152 133" fill="none" stroke="#d3d3d3" stroke-width="1" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.7;0.1;0" dur="3s" repeatCount="indefinite" begin="0.5s"/>
+    <animate attributeName="d" values="M142 133 Q147 128 152 133;M142 131 Q149 123 156 128;M142 129 Q151 118 160 123;M142 127 Q153 113 164 118" dur="3s" repeatCount="indefinite" begin="0.5s"/>
+  </path>
+  
+  <!-- Coat collar -->
+  <path d="M70 160 Q100 150 130 160 L135 180 Q100 170 65 180 Z" fill="#2c3e50">
+    <animate attributeName="fill" values="#2c3e50;#34495e;#2c3e50" dur="4s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;0,-1;0,0" dur="3s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Vest -->
+  <path d="M75 170 Q100 165 125 170 L120 190 Q100 185 80 190 Z" fill="#8b0000">
+    <animate attributeName="fill" values="#8b0000;#a0522d;#8b0000" dur="4s" repeatCount="indefinite" begin="0.5s"/>
+  </path>
+  
+  <!-- Tie -->
+  <polygon points="100,175 95,185 105,185" fill="#4169e1">
+    <animate attributeName="fill" values="#4169e1;#6495ed;#4169e1" dur="3s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;1,0;-1,0;0,0" dur="2s" repeatCount="indefinite"/>
+  </polygon>
+  
+  <!-- Shirt -->
+  <rect x="85" y="180" width="30" height="15" fill="white">
+    <animate attributeName="fill" values="white;#f0f0ff;white" dur="4s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Detective thinking aura -->
+  <circle cx="100" cy="100" r="80" fill="none" stroke="#d4af37" stroke-width="1" opacity="0.3">
+    <animate attributeName="opacity" values="0.3;0.5;0.1;0.3" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="80;85;75;80" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="stroke" values="#d4af37;#ffd700;#daa520;#d4af37" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Mystery clues floating -->
+  <text x="160" y="60" font-family="serif" font-size="12" fill="#8b4513" opacity="0.7">?</text>
+  <animateTransform attributeName="transform" type="translate" values="0,0;-5,-10;5,-20;0,-30" dur="4s" repeatCount="indefinite"/>
+  <animate attributeName="opacity" values="0.7;1;0.3;0" dur="4s" repeatCount="indefinite"/>
+  
+  <text x="40" y="170" font-family="serif" font-size="10" fill="#8b4513" opacity="0.6">!</text>
+  <animateTransform attributeName="transform" type="translate" values="0,0;3,-8;-3,-16;0,-24" dur="3.5s" repeatCount="indefinite" begin="1s"/>
+  <animate attributeName="opacity" values="0.6;0.9;0.2;0" dur="3.5s" repeatCount="indefinite" begin="1s"/>
+  
+  <!-- Footprints trail -->
+  <ellipse cx="30" cy="180" rx="4" ry="6" fill="#8b4513" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.7;0.2;0.4" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="fill" values="#8b4513;#a0522d;#8b4513" dur="5s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse cx="35" cy="175" rx="4" ry="6" fill="#8b4513" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.7;0.2;0.4" dur="4s" repeatCount="indefinite" begin="0.5s"/>
+    <animate attributeName="fill" values="#8b4513;#a0522d;#8b4513" dur="5s" repeatCount="indefinite" begin="0.5s"/>
+  </ellipse>
+  <ellipse cx="40" cy="170" rx="4" ry="6" fill="#8b4513" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.7;0.2;0.4" dur="4s" repeatCount="indefinite" begin="1s"/>
+    <animate attributeName="fill" values="#8b4513;#a0522d;#8b4513" dur="5s" repeatCount="indefinite" begin="1s"/>
+  </ellipse>
+  
+  <!-- Evidence markers -->
+  <circle cx="170" cy="140" r="3" fill="#ff0000" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;1;0.3;0.6" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="3;4;2;3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <text x="167" y="145" font-family="serif" font-size="8" fill="#ff0000" opacity="0.8">A</text>
+  <animate attributeName="opacity" values="0.8;1;0.4;0.8" dur="3s" repeatCount="indefinite"/>
+  
+  <circle cx="25" cy="120" r="3" fill="#ff0000" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;1;0.3;0.6" dur="3s" repeatCount="indefinite" begin="1s"/>
+    <animate attributeName="r" values="3;4;2;3" dur="2s" repeatCount="indefinite" begin="1s"/>
+  </circle>
+  <text x="22" y="125" font-family="serif" font-size="8" fill="#ff0000" opacity="0.8">B</text>
+  <animate attributeName="opacity" values="0.8;1;0.4;0.8" dur="3s" repeatCount="indefinite" begin="1s"/>
+  
+  <!-- Case file -->
+  <rect x="150" y="170" width="20" height="25" fill="#f5deb3" stroke="#8b4513" stroke-width="1">
+    <animate attributeName="fill" values="#f5deb3;#faebd7;#f5deb3" dur="4s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="rotate" values="0 160 182;2 160 182;-2 160 182;0 160 182" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="152" y="173" width="16" height="1" fill="#8b4513" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.9;0.6" dur="2s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="152" y="176" width="14" height="1" fill="#8b4513" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.9;0.6" dur="2s" repeatCount="indefinite" begin="0.3s"/>
+  </rect>
+  <rect x="152" y="179" width="12" height="1" fill="#8b4513" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.9;0.6" dur="2s" repeatCount="indefinite" begin="0.6s"/>
+  </rect>
+  
+  <!-- Deduction lines -->
+  <path d="M60 50 L140 50" fill="none" stroke="#d4af37" stroke-width="1" stroke-dasharray="3,2" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;0.8;0.2;0.5" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="stroke" values="#d4af37;#ffd700;#d4af37" dur="3s" repeatCount="indefinite"/>
+  </path>
+  <path d="M50 60 L150 140" fill="none" stroke="#d4af37" stroke-width="1" stroke-dasharray="3,2" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;0.8;0.2;0.5" dur="4s" repeatCount="indefinite" begin="1s"/>
+    <animate attributeName="stroke" values="#d4af37;#ffd700;#d4af37" dur="3s" repeatCount="indefinite" begin="1s"/>
+  </path>
+  
+  <!-- Sherlock's notebook -->
+  <rect x="20" y="40" width="15" height="20" fill="#8b4513" stroke="#654321" stroke-width="1">
+    <animate attributeName="fill" values="#8b4513;#a0522d;#8b4513" dur="5s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;1,-1;-1,1;0,0" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="21" y="42" width="13" height="1" fill="#f5deb3" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;1;0.4;0.7" dur="2s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="21" y="45" width="11" height="1" fill="#f5deb3" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;1;0.4;0.7" dur="2s" repeatCount="indefinite" begin="0.2s"/>
+  </rect>
+  <rect x="21" y="48" width="9" height="1" fill="#f5deb3" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;1;0.4;0.7" dur="2s" repeatCount="indefinite" begin="0.4s"/>
+  </rect>
+</svg>

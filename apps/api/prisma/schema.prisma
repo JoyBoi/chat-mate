@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id               String            @id @default(uuid())
+  email            String            @unique
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  chatParticipants ChatParticipant[]
+  sentMessages     Message[]         @relation("MessageSender")
+  profile          UserProfile?
+
+  @@map("users")
+}
+
+model UserProfile {
+  id          String  @id @default(uuid())
+  userId      String  @unique @map("user_id")
+  displayName String? @map("display_name")
+  avatar      String?
+  bio         String?
+  preferences Json?   @default("{}")
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model Chat {
+  id           String            @id @default(uuid())
+  name         String?
+  type         ChatType          @default(DIRECT)
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  participants ChatParticipant[]
+  messages     Message[]
+
+  @@map("chats")
+}
+
+model ChatParticipant {
+  id       String   @id @default(uuid())
+  chatId   String   @map("chat_id")
+  userId   String   @map("user_id")
+  role     ChatRole @default(MEMBER)
+  joinedAt DateTime @default(now()) @map("joined_at")
+  chat     Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([chatId, userId])
+  @@map("chat_participants")
+}
+
+model Message {
+  id        String      @id @default(uuid())
+  chatId    String      @map("chat_id")
+  senderId  String      @map("sender_id")
+  content   String
+  type      MessageType @default(TEXT)
+  metadata  Json?       @default("{}")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  chat      Chat        @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  sender    User        @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model BotPersonality {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  prompt      String
+  avatar      String?
+  category    String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("bot_personalities")
+}
+
+enum ChatType {
+  DIRECT
+  GROUP
+  BOT
+  GLOBAL
+}
+
+enum ChatRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  SYSTEM
+  BOT_RESPONSE
+}

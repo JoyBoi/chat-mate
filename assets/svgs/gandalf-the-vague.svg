@@ -1,0 +1,118 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#f0f8ff" stroke="#4682b4" stroke-width="3"/>
+  
+  <!-- Wizard hat -->
+  <path d="M85 40 L100 10 L115 40 Q110 50 100 45 Q90 50 85 40 Z" fill="#4682b4"/>
+  <circle cx="100" cy="15" r="3" fill="#ffffff"/>
+  <!-- Hat brim -->
+  <ellipse cx="100" cy="40" rx="20" ry="5" fill="#4682b4"/>
+  
+  <!-- Long flowing hair -->
+  <path d="M80 45 Q70 60 75 80 Q80 100 85 120" fill="none" stroke="#d3d3d3" stroke-width="8" stroke-linecap="round"/>
+  <path d="M120 45 Q130 60 125 80 Q120 100 115 120" fill="none" stroke="#d3d3d3" stroke-width="8" stroke-linecap="round"/>
+  <path d="M85 50 Q75 65 80 85 Q85 105 90 125" fill="none" stroke="#f5f5f5" stroke-width="6" stroke-linecap="round"/>
+  <path d="M115 50 Q125 65 120 85 Q115 105 110 125" fill="none" stroke="#f5f5f5" stroke-width="6" stroke-linecap="round"/>
+  
+  <!-- Face -->
+  <ellipse cx="100" cy="80" rx="25" ry="30" fill="#fdbcb4"/>
+  
+  <!-- Bushy eyebrows -->
+  <ellipse cx="90" cy="70" rx="8" ry="3" fill="#d3d3d3"/>
+  <ellipse cx="110" cy="70" rx="8" ry="3" fill="#d3d3d3"/>
+  
+  <!-- Eyes (wise but vague) -->
+  <ellipse cx="90" cy="78" rx="4" ry="6" fill="white"/>
+  <ellipse cx="110" cy="78" rx="4" ry="6" fill="white"/>
+  <circle cx="90" cy="78" r="2" fill="#4682b4"/>
+  <circle cx="110" cy="78" r="2" fill="#4682b4"/>
+  <!-- Twinkling effect -->
+  <circle cx="88" cy="76" r="1" fill="white" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="112" cy="76" r="1" fill="white" opacity="0.8">
+    <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite" begin="0.5s" />
+  </circle>
+  
+  <!-- Long nose -->
+  <polygon points="100,85 96,95 104,95" fill="#f4a460"/>
+  
+  <!-- Long flowing beard -->
+  <ellipse cx="100" cy="110" rx="20" ry="25" fill="#f5f5f5"/>
+  <ellipse cx="100" cy="125" rx="18" ry="20" fill="#f5f5f5"/>
+  <ellipse cx="100" cy="140" rx="15" ry="15" fill="#f5f5f5"/>
+  <!-- Beard highlights -->
+  <path d="M90 110 Q95 105 100 110" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <path d="M100 120 Q105 115 110 120" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Mouth (hidden in beard) -->
+  <ellipse cx="100" cy="95" rx="3" ry="2" fill="#8b4513"/>
+  
+  <!-- Wizard robe -->
+  <path d="M75 150 Q100 140 125 150 L130 185 Q100 175 70 185 Z" fill="#708090"/>
+  <!-- Robe trim -->
+  <path d="M75 150 Q100 145 125 150" fill="none" stroke="#4682b4" stroke-width="3"/>
+  
+  <!-- Staff -->
+  <rect x="45" y="80" width="4" height="80" fill="#8b4513"/>
+  <!-- Crystal orb on staff -->
+  <circle cx="47" cy="75" r="8" fill="#e6e6fa" stroke="#4682b4" stroke-width="2" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.4;0.8" dur="3s" repeatCount="indefinite" />
+    <animate attributeName="fill" values="#e6e6fa;#ffffff;#e6e6fa" dur="2s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="47" cy="75" r="5" fill="#ffffff" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite" />
+    <animate attributeName="r" values="5;7;5" dur="3s" repeatCount="indefinite" />
+  </circle>
+  <!-- Crystal inner glow -->
+  <circle cx="47" cy="75" r="3" fill="#87ceeb" opacity="0.9">
+    <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- Mystical symbols floating around (reduced for better character focus) -->
+  <text x="130" y="90" font-family="serif" font-size="10" fill="#4682b4" opacity="0.4">?
+    <animate attributeName="opacity" values="0.4;0.2;0.4" dur="3s" repeatCount="indefinite" />
+    <animateTransform attributeName="transform" type="translate" values="0,0;-2,-3;0,0" dur="3s" repeatCount="indefinite"/>
+  </text>
+  <text x="140" y="110" font-family="serif" font-size="8" fill="#4682b4" opacity="0.3">∞
+    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite" />
+    <animateTransform attributeName="transform" type="rotate" values="0 140 110;360 140 110" dur="5s" repeatCount="indefinite"/>
+  </text>
+  
+  <!-- Floating question mark (reduced to single element) -->
+  <text x="60" y="70" font-family="serif" font-size="12" fill="#4682b4" opacity="0.3">?
+    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite" />
+    <animateTransform attributeName="transform" type="translate" values="0,0;-5,-8;0,0" dur="5s" repeatCount="indefinite"/>
+  </text>
+  
+  <!-- Mystical aura (reduced opacity for better character focus) -->
+  <circle cx="100" cy="100" r="85" fill="none" stroke="#4682b4" stroke-width="1" opacity="0.2">
+    <animate attributeName="r" values="85;88;85" dur="5s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0.2;0.05;0.2" dur="5s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- Additional mystical rings -->
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#87ceeb" stroke-width="1" opacity="0.2">
+    <animate attributeName="r" values="75;80;75" dur="5s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0.2;0.05;0.2" dur="5s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- Magical sparkles -->
+  <circle cx="170" cy="60" r="1" fill="#ffffff" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="30" cy="140" r="1" fill="#87ceeb" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.1;0.6" dur="2s" repeatCount="indefinite" begin="0.5s" />
+  </circle>
+  <circle cx="160" cy="150" r="1" fill="#4682b4" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite" begin="1s" />
+  </circle>
+  
+  <!-- Wisdom emanation -->
+  <text x="35" y="100" font-family="serif" font-size="6" fill="#4682b4" opacity="0.4">✦
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2s" repeatCount="indefinite" />
+  </text>
+  <text x="165" y="120" font-family="serif" font-size="8" fill="#87ceeb" opacity="0.5">✧
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="2s" repeatCount="indefinite" begin="0.5s" />
+  </text>
+</svg>

@@ -1,0 +1,128 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#1a1a2e" stroke="#ffd700" stroke-width="3"/>
+  
+  <!-- Slicked back hair -->
+  <path d="M70 60 Q100 50 130 60 L125 85 Q100 75 75 85 Z" fill="#2c3e50"/>
+  <!-- Hair highlights -->
+  <path d="M75 65 Q100 55 125 65" fill="none" stroke="#34495e" stroke-width="2"/>
+  
+  <!-- Face -->
+  <ellipse cx="100" cy="95" rx="28" ry="32" fill="#fdbcb4"/>
+  
+  <!-- Goatee -->
+  <ellipse cx="100" cy="115" rx="8" ry="12" fill="#2c3e50"/>
+  <path d="M95 120 Q100 125 105 120" fill="none" stroke="#34495e" stroke-width="1"/>
+  
+  <!-- Sunglasses -->
+  <ellipse cx="90" cy="88" rx="10" ry="8" fill="#2c3e50"/>
+  <ellipse cx="110" cy="88" rx="10" ry="8" fill="#2c3e50"/>
+  <line x1="100" y1="88" x2="100" y2="88" stroke="#2c3e50" stroke-width="2"/>
+  <!-- Sunglasses frame -->
+  <ellipse cx="90" cy="88" rx="10" ry="8" fill="none" stroke="#ffd700" stroke-width="1"/>
+  <ellipse cx="110" cy="88" rx="10" ry="8" fill="none" stroke="#ffd700" stroke-width="1"/>
+  <!-- Reflection on glasses -->
+  <ellipse cx="85" cy="85" rx="3" ry="2" fill="#ffffff" opacity="0.6"/>
+  <ellipse cx="105" cy="85" rx="3" ry="2" fill="#ffffff" opacity="0.6"/>
+  
+  <!-- Nose -->
+  <polygon points="100,95 97,102 103,102" fill="#f4a460"/>
+  
+  <!-- Smirk -->
+  <path d="M95 108 Q102 112 108 108" fill="none" stroke="#8b4513" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- High-tech suit -->
+  <path d="M72 130 Q100 120 128 130 L133 180 Q100 170 67 180 Z" fill="#2c3e50"/>
+  
+  <!-- Arc reactor -->
+  <circle cx="100" cy="155" r="12" fill="#00bfff" stroke="#ffd700" stroke-width="2">
+    <animate attributeName="fill" values="#00bfff;#87ceeb;#00bfff" dur="2s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="100" cy="155" r="8" fill="#ffffff" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="100" cy="155" r="4" fill="#00bfff">
+    <animate attributeName="fill" values="#00bfff;#ffffff;#00bfff" dur="1s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- Shirt collar -->
+  <path d="M85 130 Q100 125 115 130 L110 140 Q100 135 90 140 Z" fill="#ffffff"/>
+  
+  <!-- Tie -->
+  <polygon points="100,135 96,165 104,165" fill="#8b0000"/>
+  
+  <!-- Holographic display -->
+  <rect x="130" y="110" width="25" height="15" fill="#00bfff" opacity="0.6" stroke="#ffd700" stroke-width="1">
+    <animate attributeName="opacity" values="0.6;0.3;0.6" dur="3s" repeatCount="indefinite" />
+  </rect>
+  <!-- Hologram content -->
+  <line x1="132" y1="115" x2="153" y2="115" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+  <line x1="132" y1="118" x2="148" y2="118" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+  <line x1="132" y1="121" x2="153" y2="121" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+  
+  <!-- Expensive watch -->
+  <rect x="65" y="140" width="8" height="12" fill="#ffd700" stroke="#daa520" stroke-width="1"/>
+  <circle cx="69" cy="146" r="3" fill="#2c3e50"/>
+  <circle cx="69" cy="146" r="1" fill="#ffd700"/>
+  
+  <!-- Money/cash in pocket -->
+  <rect x="75" y="125" width="3" height="8" fill="#228b22"/>
+  <rect x="78" y="127" width="3" height="8" fill="#228b22"/>
+  <rect x="81" y="129" width="3" height="8" fill="#228b22"/>
+  
+  <!-- Confident posture elements -->
+  <!-- Raised eyebrow (visible above sunglasses) -->
+  <path d="M105 80 Q110 78 115 80" fill="none" stroke="#8b4513" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Tech gadgets floating around -->
+  <circle cx="60" cy="90" r="3" fill="#00bfff" opacity="0.7">
+    <animate attributeName="cy" values="90;85;90" dur="4s" repeatCount="indefinite" />
+  </circle>
+  <rect x="145" y="95" width="4" height="6" fill="#ffd700" opacity="0.6">
+    <animate attributeName="y" values="95;90;95" dur="3s" repeatCount="indefinite" />
+  </rect>
+  
+  <!-- Ego aura -->
+  <circle cx="100" cy="100" r="80" fill="none" stroke="#ffd700" stroke-width="1" opacity="0.2">
+    <animate attributeName="r" values="80;85;80" dur="5s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0.2;0.1;0.2" dur="5s" repeatCount="indefinite" />
+  </circle>
+  <!-- Tech enhancement elements -->
+  <!-- Circuit patterns -->
+  <path d="M30 60 L40 60 L40 70 L50 70" fill="none" stroke="#00bfff" stroke-width="0.5" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite" />
+  </path>
+  <path d="M150 80 L160 80 L160 90 L170 90" fill="none" stroke="#00bfff" stroke-width="0.5" opacity="0.3">
+    <animate attributeName="opacity" values="0.3;0.7;0.3" dur="4s" repeatCount="indefinite" />
+  </path>
+  
+  <!-- Holographic display -->
+  <rect x="20" y="140" width="25" height="15" fill="#000033" stroke="#00bfff" stroke-width="0.5" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.9;0.6" dur="2s" repeatCount="indefinite" />
+  </rect>
+  <text x="22" y="148" font-family="monospace" font-size="4" fill="#00bfff">
+    <animate attributeName="fill" values="#00bfff;#66ccff;#00bfff" dur="2s" repeatCount="indefinite" />
+    STARK
+  </text>
+  <text x="22" y="152" font-family="monospace" font-size="3" fill="#00ff00">
+    <animate attributeName="fill" values="#00ff00;#66ff66;#00ff00" dur="2s" repeatCount="indefinite" />
+    ONLINE
+  </text>
+  
+  <!-- Energy particles -->
+  <circle cx="100" cy="50" r="1" fill="#00bfff" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3s" repeatCount="indefinite" />
+    <animateTransform attributeName="transform" type="translate" values="0,0;2,-1;0,-2;-2,-1;0,0" dur="4s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="120" cy="120" r="0.8" fill="#ffd700" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite" />
+    <animateTransform attributeName="transform" type="translate" values="0,0;-1,1;0,2;1,1;0,0" dur="3.5s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- Tech aura -->
+  <circle cx="100" cy="100" r="80" fill="none" stroke="#00bfff" stroke-width="0.3" opacity="0.2">
+    <animate attributeName="opacity" values="0.2;0.4;0.2" dur="5s" repeatCount="indefinite" />
+    <animate attributeName="r" values="80;85;80" dur="5s" repeatCount="indefinite" />
+  </circle>
+  
+</svg>
