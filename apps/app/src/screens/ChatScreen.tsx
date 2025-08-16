@@ -85,9 +85,9 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     chatType,
     botId,
     isConnected,
+    loadInitialMessages,
     joinGlobalChat,
     joinBotChat,
-    loadInitialMessages,
   ]);
 
   const sendMessage = () => {
@@ -212,8 +212,12 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
         renderItem={renderMessage}
         keyExtractor={item => item.id}
         style={styles.messagesList}
-        onContentSizeChange={() => void flatListRef.current?.scrollToEnd()}
-        onLayout={() => void flatListRef.current?.scrollToEnd()}
+        onContentSizeChange={() => {
+          void flatListRef.current?.scrollToEnd({ animated: true });
+        }}
+        onLayout={() => {
+          void flatListRef.current?.scrollToEnd({ animated: true });
+        }}
       />
       <View style={styles.inputContainer}>
         <TextInput
