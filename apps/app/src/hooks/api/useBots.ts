@@ -1,30 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 import { apiClient } from '../../lib/api';
 import { queryKeys } from '../../lib/queryClient';
 
-export interface BotPersonality {
-  id: string;
-  name: string;
-  description: string;
-  prompt: string;
-  avatar?: string;
-  category?: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import type {
+  BotPersonality,
+  CreateBotRequest,
+  UpdateBotRequest,
+} from '@chat-mate/types';
 
-export interface CreateBotRequest {
-  name: string;
-  description: string;
-  prompt: string;
-  avatar?: string;
-  category?: string;
-}
-
-export interface UpdateBotRequest extends Partial<CreateBotRequest> {
-  isActive?: boolean;
-}
+// Re-export shared types for convenience
+export type { BotPersonality, CreateBotRequest, UpdateBotRequest };
 
 // Get all bot personalities
 export const useBots = () => {
@@ -66,8 +52,9 @@ export const useCreateBot = () => {
 
   return useMutation({
     mutationFn: async (data: CreateBotRequest): Promise<BotPersonality> => {
-      const response = await apiClient.post('/bots', data);
-      return (response.data as { data: BotPersonality }).data;
+      const response: AxiosResponse<{ data: BotPersonality }> =
+        await apiClient.post('/bots', data);
+      return response.data.data;
     },
     onSuccess: newBot => {
       // Invalidate and refetch bot lists
@@ -92,14 +79,15 @@ export const useUpdateBot = () => {
       botId: string;
       data: UpdateBotRequest;
     }): Promise<BotPersonality> => {
-      const response = await apiClient.patch(`/bots/${botId}`, data);
-      return (response.data as { data: BotPersonality }).data;
+      const response: AxiosResponse<{ data: BotPersonality }> =
+        await apiClient.patch(`/bots/${botId}`, data);
+      return response.data.data;
     },
     onSuccess: updatedBot => {
       // Update the specific bot in cache
       queryClient.setQueryData(
         queryKeys.bots.detail(updatedBot.id),
-        updatedBot,
+        updatedBot
       );
 
       // Invalidate lists to ensure consistency
@@ -128,6 +116,60 @@ export const useDeleteBot = () => {
   });
 };
 
+// Get featured bot personalities
+export const useFeaturedBots = () => {
+  return useQuery({
+    queryKey: queryKeys.bots.featured,
+    queryFn: async () => {
+      const response = await apiClient.get<BotPersonality[]>('/bots/featured');
+      return response.data;
+    },
+  });
+};
+
+// Get non-featured bot personalities
+export const useNonFeaturedBots = () => {
+  return useQuery({
+    queryKey: queryKeys.bots.nonFeatured,
+    queryFn: async () => {
+      const response =
+        await apiClient.get<BotPersonality[]>('/bots/non-featured');
+      return response.data;
+    },
+  });
+};
+
+// Manually rotate featured bots
+export const useRotateFeaturedBots = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (): Promise<{ message: string }> => {
+      const response = await apiClient.post('/bots/rotate-featured');
+      return response.data as { message: string };
+    },
+    onSuccess: () => {
+      // Invalidate all bot queries to refresh the data
+      queryClient
+        .invalidateQueries({ queryKey: queryKeys.bots.all })
+        .catch(console.error);
+      queryClient
+        .invalidateQueries({ queryKey: queryKeys.bots.active })
+        .catch(console.error);
+      queryClient
+        .invalidateQueries({
+          queryKey: queryKeys.bots.featured,
+        })
+        .catch(console.error);
+      queryClient
+        .invalidateQueries({
+          queryKey: queryKeys.bots.nonFeatured,
+        })
+        .catch(console.error);
+    },
+  });
+};
+
 // Toggle bot active status
 export const useToggleBotStatus = () => {
   const updateBot = useUpdateBot();
@@ -141,6 +183,23 @@ export const useToggleBotStatus = () => {
       isActive: boolean;
     }) => {
       return updateBot.mutateAsync({ botId, data: { isActive } });
+    },
+  });
+};
+
+// Toggle bot featured status
+export const useToggleBotFeatured = () => {
+  const updateBot = useUpdateBot();
+
+  return useMutation({
+    mutationFn: async ({
+      botId,
+      isFeatured,
+    }: {
+      botId: string;
+      isFeatured: boolean;
+    }) => {
+      return updateBot.mutateAsync({ botId, data: { isFeatured } });
     },
   });
 };

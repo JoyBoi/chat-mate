@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { AxiosResponse, AxiosError } from 'axios';
 import { apiClient } from '../../lib/api';
 import { queryKeys } from '../../lib/queryClient';
 
@@ -58,11 +59,21 @@ export interface GenerateResponseResponse {
   createdAt: string;
 }
 
+export interface AIUsageStats {
+  totalRequests: number;
+  totalTokens: number;
+  summarizeRequests: number;
+  translateRequests: number;
+  generateRequests: number;
+  period: string;
+}
+
 // Summarize messages
 export const useSummarizeMessages = () => {
   return useMutation({
     mutationFn: async (data: SummarizeRequest): Promise<SummarizeResponse> => {
-      const response = await apiClient.post('/ai/summarize', data);
+      const response: AxiosResponse<{ data: SummarizeResponse }> =
+        await apiClient.post('/ai/summarize', data);
       return response.data.data;
     },
   });
@@ -74,12 +85,14 @@ export const useCachedSummary = (messageIds: string[]) => {
     queryKey: queryKeys.ai.summarize(messageIds),
     queryFn: async (): Promise<SummarizeResponse | null> => {
       try {
-        const response = await apiClient.get(
-          `/ai/summarize/cached?messageIds=${messageIds.join(',')}`,
-        );
+        const response: AxiosResponse<{ data: SummarizeResponse }> =
+          await apiClient.get(
+            `/ai/summarize/cached?messageIds=${messageIds.join(',')}`
+          );
         return response.data.data;
-      } catch (error: any) {
-        if (error.response?.status === 404) {
+      } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response?.status === 404) {
           return null;
         }
         throw error;
@@ -95,7 +108,8 @@ export const useCachedSummary = (messageIds: string[]) => {
 export const useTranslateMessage = () => {
   return useMutation({
     mutationFn: async (data: TranslateRequest): Promise<TranslateResponse> => {
-      const response = await apiClient.post('/ai/translate', data);
+      const response: AxiosResponse<{ data: TranslateResponse }> =
+        await apiClient.post('/ai/translate', data);
       return response.data.data;
     },
   });
@@ -104,18 +118,20 @@ export const useTranslateMessage = () => {
 // Get cached translation if available
 export const useCachedTranslation = (
   messageId: string,
-  targetLanguage: string,
+  targetLanguage: string
 ) => {
   return useQuery({
     queryKey: queryKeys.ai.translate(messageId, targetLanguage),
     queryFn: async (): Promise<TranslateResponse | null> => {
       try {
-        const response = await apiClient.get(
-          `/ai/translate/cached/${messageId}?targetLanguage=${targetLanguage}`,
-        );
+        const response: AxiosResponse<{ data: TranslateResponse }> =
+          await apiClient.get(
+            `/ai/translate/cached/${messageId}?targetLanguage=${targetLanguage}`
+          );
         return response.data.data;
-      } catch (error: any) {
-        if (error.response?.status === 404) {
+      } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response?.status === 404) {
           return null;
         }
         throw error;
@@ -131,9 +147,10 @@ export const useCachedTranslation = (
 export const useDetectLanguage = () => {
   return useMutation({
     mutationFn: async (
-      data: DetectLanguageRequest,
+      data: DetectLanguageRequest
     ): Promise<DetectLanguageResponse> => {
-      const response = await apiClient.post('/ai/detect-language', data);
+      const response: AxiosResponse<{ data: DetectLanguageResponse }> =
+        await apiClient.post('/ai/detect-language', data);
       return response.data.data;
     },
   });
@@ -143,9 +160,10 @@ export const useDetectLanguage = () => {
 export const useGenerateResponse = () => {
   return useMutation({
     mutationFn: async (
-      data: GenerateResponseRequest,
+      data: GenerateResponseRequest
     ): Promise<GenerateResponseResponse> => {
-      const response = await apiClient.post('/ai/generate', data);
+      const response: AxiosResponse<{ data: GenerateResponseResponse }> =
+        await apiClient.post('/ai/generate', data);
       return response.data.data;
     },
   });
@@ -158,7 +176,8 @@ export const useBatchTranslate = () => {
       messageIds: string[];
       targetLanguage: string;
     }): Promise<TranslateResponse[]> => {
-      const response = await apiClient.post('/ai/translate/batch', data);
+      const response: AxiosResponse<{ data: TranslateResponse[] }> =
+        await apiClient.post('/ai/translate/batch', data);
       return response.data.data;
     },
   });
@@ -168,9 +187,9 @@ export const useBatchTranslate = () => {
 export const useAIUsageStats = (timeframe: 'day' | 'week' | 'month') => {
   return useQuery({
     queryKey: ['ai', 'usage', timeframe],
-    queryFn: async () => {
+    queryFn: async (): Promise<AIUsageStats> => {
       const response = await apiClient.get(`/ai/usage?timeframe=${timeframe}`);
-      return response.data.data;
+      return (response.data as { data: AIUsageStats }).data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes

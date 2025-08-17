@@ -9,7 +9,13 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { BotAvatar } from '../components/avatars/BotAvatars';
-import { useActiveBots, BotPersonality } from '../hooks/api/useBots';
+import {
+  useFeaturedBots,
+  useNonFeaturedBots,
+  BotPersonality,
+} from '../hooks/api/useBots';
+import { SuccessFeedback } from '../components/SuccessFeedback';
+import { useMultiQuerySuccessFeedback } from '../hooks/useSuccessFeedback';
 // import { ListComparison } from "../components/performance/ListComparison";
 
 interface BotSelectionScreenProps {
@@ -22,7 +28,21 @@ export const BotSelectionScreen: React.FC<BotSelectionScreenProps> = ({
   onGlobalChat,
 }) => {
   const [showPerformanceTest, setShowPerformanceTest] = useState(false);
-  const { data: bots, isLoading, error } = useActiveBots();
+  const featuredBotsQuery = useFeaturedBots();
+  const nonFeaturedBotsQuery = useNonFeaturedBots();
+  const { data: featuredBots, isLoading: featuredLoading } = featuredBotsQuery;
+  const { data: nonFeaturedBots, isLoading: nonFeaturedLoading } =
+    nonFeaturedBotsQuery;
+  const isLoading = featuredLoading || nonFeaturedLoading;
+
+  // Success feedback for bot data loading
+  const successFeedback = useMultiQuerySuccessFeedback(
+    [featuredBotsQuery, nonFeaturedBotsQuery],
+    {
+      successMessage: 'Bot personalities loaded successfully! 🤖',
+      duration: 2500,
+    }
+  );
 
   const renderBot = ({ item }: { item: BotPersonality }) => (
     <TouchableOpacity style={styles.botCard} onPress={() => onSelectBot(item)}>
@@ -34,6 +54,20 @@ export const BotSelectionScreen: React.FC<BotSelectionScreenProps> = ({
         <Text style={styles.botDescription}>{item.description}</Text>
         <Text style={styles.botPersonality}>Personality: {item.prompt}</Text>
       </View>
+    </TouchableOpacity>
+  );
+
+  const renderFeaturedBot = ({ item }: { item: BotPersonality }) => (
+    <TouchableOpacity
+      style={styles.featuredBotCard}
+      onPress={() => onSelectBot(item)}
+    >
+      <View style={styles.featuredAvatarContainer}>
+        <BotAvatar botId={item.id} size={50} style={styles.avatar} />
+      </View>
+      <Text style={styles.featuredBotName} numberOfLines={2}>
+        {item.name}
+      </Text>
     </TouchableOpacity>
   );
 
@@ -72,8 +106,8 @@ export const BotSelectionScreen: React.FC<BotSelectionScreenProps> = ({
         {/* eslint-disable-next-line jsx-a11y/accessible-emoji */}
         <Text
           style={styles.globalChatEmoji}
-          role="img"
-          accessibilityLabel="Global chat icon"
+          role='img'
+          accessibilityLabel='Global chat icon'
         >
           🌍
         </Text>
@@ -85,26 +119,47 @@ export const BotSelectionScreen: React.FC<BotSelectionScreenProps> = ({
         </View>
       </TouchableOpacity>
 
-      <Text style={styles.sectionTitle}>AI Bots</Text>
+      {/* Featured Bots Section */}
+      {featuredBots && featuredBots.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>
+            {/* eslint-disable-next-line jsx-a11y/accessible-emoji */}
+            <Text>⭐</Text> Featured Bots
+          </Text>
+          <FlatList
+            data={featuredBots}
+            renderItem={renderFeaturedBot}
+            keyExtractor={item => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.featuredBotsContainer}
+            style={styles.featuredBotsList}
+          />
+        </>
+      )}
+
+      <Text style={styles.sectionTitle}>All AI Bots</Text>
 
       {isLoading ? (
         <ActivityIndicator
-          size="large"
-          color="#007AFF"
+          size='large'
+          color='#007AFF'
           style={{ marginTop: 20 }}
         />
-      ) : error ? (
-        <Text style={styles.errorText}>
-          Failed to load bots. Please try again.
-        </Text>
       ) : (
         <FlatList
-          data={bots || []}
+          data={nonFeaturedBots || []}
           renderItem={renderBot}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
         />
       )}
+      <SuccessFeedback
+        visible={successFeedback.visible}
+        message={successFeedback.message}
+        onHide={successFeedback.hideFeedback}
+        duration={successFeedback.duration}
+      />
     </View>
   );
 };
@@ -233,5 +288,35 @@ const styles = StyleSheet.create({
     color: '#ff4444',
     textAlign: 'center',
     marginTop: 20,
+  },
+  featuredBotsList: {
+    marginBottom: 24,
+  },
+  featuredBotsContainer: {
+    paddingHorizontal: 8,
+  },
+  featuredBotCard: {
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 12,
+    marginHorizontal: 8,
+    alignItems: 'center',
+    width: 100,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  featuredAvatarContainer: {
+    marginBottom: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  featuredBotName: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#333',
+    textAlign: 'center',
   },
 });

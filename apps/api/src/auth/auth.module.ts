@@ -6,12 +6,14 @@ import { JwtStrategy } from './jwt.strategy';
 import { GuestAuthService } from './guest-auth.service';
 import { GuestAuthController } from './guest-auth.controller';
 import { SupabaseModule } from '../supabase/supabase.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     ConfigModule,
     PassportModule,
     SupabaseModule,
+    UsersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({

@@ -3,58 +3,27 @@ import {
   useMutation,
   useQueryClient,
   useInfiniteQuery,
+  InfiniteData,
 } from '@tanstack/react-query';
 import { apiClient } from '../../lib/api';
 import { queryKeys } from '../../lib/queryClient';
 
-export interface ChatRoom {
-  id: string;
-  name: string;
-  description?: string;
-  type: 'direct' | 'group' | 'bot' | 'global';
-  isPrivate: boolean;
-  createdBy: string;
-  participantCount: number;
-  lastMessage?: {
-    id: string;
-    content: string;
-    senderName: string;
-    createdAt: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
+import type {
+  ChatRoom,
+  ChatParticipant,
+  CreateChatRequest,
+  UpdateChatRequest,
+  ChatsResponse,
+} from '@chat-mate/types';
 
-export interface ChatParticipant {
-  id: string;
-  userId: string;
-  userName: string;
-  userAvatar?: string;
-  role: 'admin' | 'moderator' | 'member';
-  joinedAt: string;
-  isOnline: boolean;
-  lastSeen?: string;
-}
-
-export interface CreateChatRequest {
-  name: string;
-  description?: string;
-  type: 'direct' | 'group' | 'bot';
-  isPrivate?: boolean;
-  participantIds?: string[];
-}
-
-export interface UpdateChatRequest {
-  name?: string;
-  description?: string;
-  isPrivate?: boolean;
-}
-
-export interface ChatsResponse {
-  chats: ChatRoom[];
-  nextCursor?: string;
-  hasMore: boolean;
-}
+// Re-export shared types for convenience
+export type {
+  ChatRoom,
+  ChatParticipant,
+  CreateChatRequest,
+  UpdateChatRequest,
+  ChatsResponse,
+};
 
 // Get all chat rooms for the current user
 export const useChats = (limit = 20) => {
@@ -66,7 +35,7 @@ export const useChats = (limit = 20) => {
         ...(pageParam && { cursor: pageParam }),
       });
       const response = await apiClient.get(`/chats?${params}`);
-      return response.data.data;
+      return (response.data as { data: ChatsResponse }).data;
     },
     initialPageParam: undefined,
     getNextPageParam: (lastPage: ChatsResponse) => lastPage.nextCursor,
@@ -81,7 +50,7 @@ export const useChat = (chatId: string) => {
     queryKey: queryKeys.chats.detail(chatId),
     queryFn: async (): Promise<ChatRoom> => {
       const response = await apiClient.get(`/chats/${chatId}`);
-      return response.data.data;
+      return (response.data as { data: ChatRoom }).data;
     },
     enabled: !!chatId,
     staleTime: 60 * 1000,
@@ -94,7 +63,7 @@ export const useChatParticipants = (chatId: string) => {
     queryKey: queryKeys.chats.participants(chatId),
     queryFn: async (): Promise<ChatParticipant[]> => {
       const response = await apiClient.get(`/chats/${chatId}/participants`);
-      return response.data.data;
+      return (response.data as { data: ChatParticipant[] }).data;
     },
     enabled: !!chatId,
     staleTime: 60 * 1000,
@@ -108,21 +77,28 @@ export const useCreateChat = () => {
   return useMutation({
     mutationFn: async (data: CreateChatRequest): Promise<ChatRoom> => {
       const response = await apiClient.post('/chats', data);
-      return response.data.data;
+      return (response.data as { data: ChatRoom }).data;
     },
     onSuccess: newChat => {
       // Add the new chat to the infinite query cache
-      queryClient.setQueryData(queryKeys.chats.list(), (oldData: any) => {
-        if (!oldData) return { pages: [{ chats: [newChat] }] };
-        const newPages = [...oldData.pages];
-        if (newPages[0]) {
-          newPages[0] = {
-            ...newPages[0],
-            chats: [newChat, ...newPages[0].chats],
-          };
+      queryClient.setQueryData(
+        queryKeys.chats.list(),
+        (oldData: InfiniteData<ChatsResponse> | undefined) => {
+          if (!oldData)
+            return {
+              pages: [{ chats: [newChat] }],
+              pageParams: [undefined],
+            };
+          const newPages = [...oldData.pages];
+          if (newPages[0]) {
+            newPages[0] = {
+              ...newPages[0],
+              chats: [newChat, ...newPages[0].chats],
+            };
+          }
+          return { ...oldData, pages: newPages };
         }
-        return { ...oldData, pages: newPages };
-      });
+      );
 
       // Set the individual chat data
       queryClient.setQueryData(queryKeys.chats.detail(newChat.id), newChat);
@@ -143,26 +119,29 @@ export const useUpdateChat = () => {
       data: UpdateChatRequest;
     }): Promise<ChatRoom> => {
       const response = await apiClient.put(`/chats/${chatId}`, data);
-      return response.data.data;
+      return (response.data as { data: ChatRoom }).data;
     },
     onSuccess: updatedChat => {
       // Update the chat in all relevant queries
       queryClient.setQueryData(
         queryKeys.chats.detail(updatedChat.id),
-        updatedChat,
+        updatedChat
       );
 
       // Update the chat in the list query
-      queryClient.setQueryData(queryKeys.chats.list(), (oldData: any) => {
-        if (!oldData) return oldData;
-        const newPages = oldData.pages.map((page: any) => ({
-          ...page,
-          chats: page.chats.map((chat: ChatRoom) =>
-            chat.id === updatedChat.id ? updatedChat : chat,
-          ),
-        }));
-        return { ...oldData, pages: newPages };
-      });
+      queryClient.setQueryData(
+        queryKeys.chats.list(),
+        (oldData: InfiniteData<ChatsResponse> | undefined) => {
+          if (!oldData) return oldData;
+          const newPages = oldData.pages.map((page: ChatsResponse) => ({
+            ...page,
+            chats: page.chats.map((chat: ChatRoom) =>
+              chat.id === updatedChat.id ? updatedChat : chat
+            ),
+          }));
+          return { ...oldData, pages: newPages };
+        }
+      );
     },
   });
 };
@@ -177,27 +156,30 @@ export const useDeleteChat = () => {
     },
     onSuccess: (_, chatId) => {
       // Remove the chat from all queries
-      queryClient.removeQueries({
+      void queryClient.removeQueries({
         queryKey: queryKeys.chats.detail(chatId),
       });
 
-      queryClient.removeQueries({
+      void queryClient.removeQueries({
         queryKey: queryKeys.chats.participants(chatId),
       });
 
-      queryClient.removeQueries({
+      void queryClient.removeQueries({
         queryKey: queryKeys.messages.list(chatId),
       });
 
       // Remove from the list query
-      queryClient.setQueryData(queryKeys.chats.list(), (oldData: any) => {
-        if (!oldData) return oldData;
-        const newPages = oldData.pages.map((page: any) => ({
-          ...page,
-          chats: page.chats.filter((chat: ChatRoom) => chat.id !== chatId),
-        }));
-        return { ...oldData, pages: newPages };
-      });
+      queryClient.setQueryData(
+        queryKeys.chats.list(),
+        (oldData: InfiniteData<ChatsResponse> | undefined) => {
+          if (!oldData) return oldData;
+          const newPages = oldData.pages.map((page: ChatsResponse) => ({
+            ...page,
+            chats: page.chats.filter((chat: ChatRoom) => chat.id !== chatId),
+          }));
+          return { ...oldData, pages: newPages };
+        }
+      );
     },
   });
 };
@@ -209,16 +191,16 @@ export const useJoinChat = () => {
   return useMutation({
     mutationFn: async (chatId: string): Promise<ChatParticipant> => {
       const response = await apiClient.post(`/chats/${chatId}/join`);
-      return response.data.data;
+      return (response.data as { data: ChatParticipant }).data;
     },
     onSuccess: (participant, chatId) => {
       // Invalidate participants query
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: queryKeys.chats.participants(chatId),
       });
 
       // Invalidate chat details to update participant count
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: queryKeys.chats.detail(chatId),
       });
     },
@@ -235,21 +217,24 @@ export const useLeaveChat = () => {
     },
     onSuccess: (_, chatId) => {
       // Remove the chat from user's chat list
-      queryClient.setQueryData(queryKeys.chats.list(), (oldData: any) => {
-        if (!oldData) return oldData;
-        const newPages = oldData.pages.map((page: any) => ({
-          ...page,
-          chats: page.chats.filter((chat: ChatRoom) => chat.id !== chatId),
-        }));
-        return { ...oldData, pages: newPages };
-      });
+      queryClient.setQueryData(
+        queryKeys.chats.list(),
+        (oldData: InfiniteData<ChatsResponse> | undefined) => {
+          if (!oldData) return oldData;
+          const newPages = oldData.pages.map((page: ChatsResponse) => ({
+            ...page,
+            chats: page.chats.filter((chat: ChatRoom) => chat.id !== chatId),
+          }));
+          return { ...oldData, pages: newPages };
+        }
+      );
 
       // Remove related queries
-      queryClient.removeQueries({
+      void queryClient.removeQueries({
         queryKey: queryKeys.chats.detail(chatId),
       });
 
-      queryClient.removeQueries({
+      void queryClient.removeQueries({
         queryKey: queryKeys.chats.participants(chatId),
       });
     },

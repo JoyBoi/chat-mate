@@ -108,7 +108,7 @@ class SocketService {
       'bot_stream_chunk',
       (data: { messageId: string; chunk: string; isComplete: boolean }) => {
         this.onBotStreamCallback?.(data);
-      },
+      }
     );
   }
 
@@ -169,7 +169,7 @@ class SocketService {
       messageId: string;
       chunk: string;
       isComplete: boolean;
-    }) => void,
+    }) => void
   ) {
     this.onBotStreamCallback = callback;
   }

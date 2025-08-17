@@ -16,6 +16,8 @@ import { AIModule } from './ai/ai.module';
 import { OpenAIModule } from './openai/openai.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { SyncModule } from './sync/sync.module';
+import { BullMQModule } from './bullmq/bullmq.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -49,6 +51,8 @@ import { SyncModule } from './sync/sync.module';
     OpenAIModule,
     RealtimeModule,
     SyncModule,
+    CommonModule,
+    ...(process.env.NODE_ENV !== 'test' ? [BullMQModule] : []),
   ],
   controllers: [AppController],
   providers: [AppService],

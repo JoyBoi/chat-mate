@@ -32,7 +32,7 @@ export const AuthScreen: React.FC = () => {
         'Success',
         isSignUp
           ? 'Account created successfully! Please check your email to verify your account.'
-          : 'Signed in successfully!',
+          : 'Signed in successfully!'
       );
     }
   };
@@ -46,21 +46,21 @@ export const AuthScreen: React.FC = () => {
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder='Email'
         value={email}
         onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
+        keyboardType='email-address'
+        autoCapitalize='none'
         autoCorrect={false}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder='Password'
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        autoCapitalize="none"
+        autoCapitalize='none'
         autoCorrect={false}
       />
 

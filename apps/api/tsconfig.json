@@ -28,6 +28,6 @@
       "@chat-mate/utils": ["../../packages/utils/src"]
     }
   },
-  "include": ["src/**/*", "test/**/*", "prisma/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*", "test/**/*", "prisma/**/*", "vitest.config.ts"],
+  "exclude": ["node_modules", "dist", "test/generated/**/*", "prisma/generated/**/*"]
 }

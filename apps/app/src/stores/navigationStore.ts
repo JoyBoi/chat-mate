@@ -118,13 +118,13 @@ export const useNavigationStore = create<NavigationState>()(
           currentScreen: state.currentScreen,
           history: state.history,
         }),
-      },
+      }
     ),
     {
       enabled: zustandDevtoolsConfig.enabled,
       name: 'Navigation Store',
-    },
-  ),
+    }
+  )
 );
 
 // Selector hooks for better performance

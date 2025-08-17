@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
+import { handleError } from '../lib/error-handler';
 import { AppPreferences } from '../lib/storage';
 import { BotSelectionScreen } from './BotSelectionScreen';
 import { ChatScreen } from './ChatScreen';
@@ -15,9 +16,13 @@ export const HomeScreen: React.FC = () => {
   const [chatType, setChatType] = useState<'global' | 'bot'>('global');
 
   const handleSignOut = async () => {
-    const { error } = await signOut();
-    if (error) {
-      Alert.alert('Error', error.message);
+    try {
+      const { error } = await signOut();
+      if (error) {
+        handleError(error, { additionalData: { source: 'sign-out' } });
+      }
+    } catch (error) {
+      handleError(error, { additionalData: { source: 'sign-out' } });
     }
   };
 
@@ -53,7 +58,7 @@ export const HomeScreen: React.FC = () => {
 
     Alert.alert(
       'Storage Test',
-      `Theme: ${theme}\nLanguage: ${language}\nDraft: ${draft}\nEmojis: ${emojis.join(', ')}`,
+      `Theme: ${theme}\nLanguage: ${language}\nDraft: ${draft}\nEmojis: ${emojis.join(', ')}`
     );
   };
 

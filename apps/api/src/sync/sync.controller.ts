@@ -1,5 +1,6 @@
 import { Controller, Get, Post } from '@nestjs/common';
 import { SyncService } from './sync.service';
+import { createSuccessResponse, createErrorResponse } from '@chat-mate/utils';
 
 @Controller('sync')
 export class SyncController {
@@ -7,32 +8,25 @@ export class SyncController {
 
   @Get('status')
   getSyncStatus() {
-    return {
-      success: true,
-      data: {
-        message: 'Sync service is running',
-        lastSyncCheck: new Date().toISOString(),
-      },
-    };
+    return createSuccessResponse({
+      message: 'Sync service is running',
+      lastSyncCheck: new Date().toISOString(),
+    });
   }
 
   @Post('check-consistency')
   async checkConsistency() {
     try {
       await this.syncService.checkDataConsistency();
-      return {
-        success: true,
-        data: {
-          message: 'Consistency check completed successfully',
-          timestamp: new Date().toISOString(),
-        },
-      };
+      return createSuccessResponse({
+        message: 'Consistency check completed successfully',
+        timestamp: new Date().toISOString(),
+      });
     } catch (error) {
-      return {
-        success: false,
-        error: 'Failed to perform consistency check',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      };
+      return createErrorResponse(
+        'Failed to perform consistency check',
+        error instanceof Error ? error.message : 'Unknown error'
+      );
     }
   }
 
@@ -40,29 +34,24 @@ export class SyncController {
   async forceSync() {
     try {
       await this.syncService.checkDataConsistency();
-      return {
-        success: true,
-        data: {
-          message: 'Force sync completed successfully',
-          timestamp: new Date().toISOString(),
-        },
-      };
+      return createSuccessResponse({
+        message: 'Force sync completed successfully',
+        timestamp: new Date().toISOString(),
+      });
     } catch (error) {
-      return {
-        success: false,
-        error: 'Failed to perform force sync',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      };
+      return createErrorResponse(
+        'Failed to perform force sync',
+        error instanceof Error ? error.message : 'Unknown error'
+      );
     }
   }
 
   @Get('realtime-status')
   getRealtimeStatus() {
     const status = this.syncService.getSyncStatus();
-    return {
-      success: true,
-      data: status,
+    return createSuccessResponse({
+      ...status,
       timestamp: new Date().toISOString(),
-    };
+    });
   }
 }

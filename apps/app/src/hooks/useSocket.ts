@@ -28,12 +28,16 @@ export const useSocket = (options: UseSocketOptions = {}) => {
   const isInitialized = useRef(false);
 
   const {
-    autoConnect = true,
+    autoConnect = false,
     onMessage,
     onTyping,
     onPresence,
     onBotStream,
   } = options;
+
+  // Store callbacks in refs to avoid dependency issues
+  const callbacksRef = useRef({ onMessage, onTyping, onPresence, onBotStream });
+  callbacksRef.current = { onMessage, onTyping, onPresence, onBotStream };
 
   // Initialize socket connection
   useEffect(() => {
@@ -42,7 +46,10 @@ export const useSocket = (options: UseSocketOptions = {}) => {
     const initializeSocket = () => {
       try {
         // Get auth token (either from Supabase session or guest token)
-        const token = (user as any).access_token || user.aud || '';
+        const token =
+          (user as { access_token?: string; aud?: string }).access_token ||
+          user.aud ||
+          '';
         const userId = user.id;
 
         if (!token || !userId) {
@@ -61,21 +68,21 @@ export const useSocket = (options: UseSocketOptions = {}) => {
         });
 
         socketService.onMessage(message => {
-          onMessage?.(message);
+          callbacksRef.current.onMessage?.(message);
         });
 
         socketService.onTyping(users => {
           setTypingUsers(users);
-          onTyping?.(users);
+          callbacksRef.current.onTyping?.(users);
         });
 
         socketService.onPresence(presence => {
           setOnlineUsers(presence);
-          onPresence?.(presence);
+          callbacksRef.current.onPresence?.(presence);
         });
 
         socketService.onBotStream(data => {
-          onBotStream?.(data);
+          callbacksRef.current.onBotStream?.(data);
         });
 
         // Connect if auto-connect is enabled
@@ -98,7 +105,7 @@ export const useSocket = (options: UseSocketOptions = {}) => {
       socketService.disconnect();
       isInitialized.current = false;
     };
-  }, [user, autoConnect, onMessage, onTyping, onPresence, onBotStream]);
+  }, [user, autoConnect]);
 
   // Manual connection methods
   const connect = () => {
@@ -107,7 +114,10 @@ export const useSocket = (options: UseSocketOptions = {}) => {
       return;
     }
 
-    const token = (user as any).access_token || user.aud || '';
+    const token =
+      (user as { access_token?: string; aud?: string }).access_token ||
+      user.aud ||
+      '';
     const userId = user.id;
 
     if (!token || !userId) {
@@ -151,7 +161,7 @@ export const useSocket = (options: UseSocketOptions = {}) => {
   const sendMessage = (
     content: string,
     chatType: 'global' | 'bot',
-    botId?: string,
+    botId?: string
   ) => {
     if (!isConnected) {
       console.warn('Socket not connected');

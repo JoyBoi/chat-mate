@@ -33,7 +33,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
   const [isTyping, setIsTyping] = useState(false);
   const [connectedUsers] = useState<number>(0);
   const flatListRef = useRef<FlatList>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Socket integration
   const {
@@ -68,9 +68,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
   }, [chatType, botName]);
 
   useEffect(() => {
-    // TODO: Initialize Socket.io connection
-    // TODO: Join appropriate room (global or bot-specific)
-    // TODO: Listen for messages, typing indicators, user presence
+    // Initialize Socket.io connection and join appropriate room
+    // Listen for messages, typing indicators, user presence
     loadInitialMessages();
 
     // Join appropriate chat room
@@ -117,7 +116,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
 
     // Set new timeout to stop typing
     typingTimeoutRef.current = setTimeout(() => {
-      handleStopTyping();
+      void handleStopTyping();
     }, 2000);
   };
 

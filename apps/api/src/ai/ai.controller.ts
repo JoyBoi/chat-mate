@@ -1,20 +1,23 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { OpenAIService } from '../openai/openai.service';
+import { Body, Controller, Post, Optional } from '@nestjs/common';
+import { BullMQService } from '../bullmq/bullmq.service';
+import { createSuccessResponse, createErrorResponse } from '@chat-mate/utils';
+import type {
+  SummarizeRequest,
+  TranslateRequest,
+  GenerateResponseRequest,
+} from '@chat-mate/types';
 
-export interface SummarizeDto {
+export interface SummarizeDto extends SummarizeRequest {
   chatId: string;
   userId: string;
-  content: string;
 }
 
-export interface TranslateDto {
+export interface TranslateDto extends TranslateRequest {
   chatId: string;
   userId: string;
-  content: string;
-  targetLanguage: string;
 }
 
-export interface BotResponseDto {
+export interface BotResponseDto extends Omit<GenerateResponseRequest, 'botId'> {
   chatId: string;
   userId: string;
   content: string;
@@ -23,68 +26,76 @@ export interface BotResponseDto {
 
 @Controller('ai')
 export class AIController {
-  constructor(private readonly openaiService: OpenAIService) {}
+  constructor(@Optional() private readonly bullmqService?: BullMQService) {}
 
   @Post('summarize')
   async summarize(@Body() dto: SummarizeDto) {
+    if (!this.bullmqService) {
+      return createErrorResponse(
+        'AI service not available in test environment'
+      );
+    }
+
     try {
-      const chunks: string[] = [];
-      for await (const chunk of this.openaiService.summarizeText(dto.content)) {
-        chunks.push(chunk);
-      }
-      return {
-        success: true,
-        data: { summary: chunks.join('') },
-      };
-    } catch {
-      return {
-        success: false,
-        error: 'Summarization failed',
-      };
+      const jobId = await this.bullmqService.addAIJob({
+        type: 'summarize',
+        text: dto.content,
+        userId: dto.userId,
+        chatId: dto.chatId,
+      });
+
+      return createSuccessResponse({ jobId });
+    } catch (error) {
+      return createErrorResponse(
+        'Failed to queue summarization job',
+        error instanceof Error ? error.message : String(error)
+      );
     }
   }
 
   @Post('translate')
   async translate(@Body() dto: TranslateDto) {
+    if (!this.bullmqService) {
+      return createErrorResponse(
+        'AI service not available in test environment'
+      );
+    }
+
     try {
-      const chunks: string[] = [];
-      for await (const chunk of this.openaiService.translateText(
-        dto.content,
-        dto.targetLanguage,
-      )) {
-        chunks.push(chunk);
-      }
-      return {
-        success: true,
-        data: { translation: chunks.join('') },
-      };
+      const jobId = await this.bullmqService.addAIJob({
+        type: 'translate',
+        text: dto.content,
+        userId: dto.userId,
+        chatId: dto.chatId,
+        targetLanguage: dto.targetLanguage,
+      });
+
+      return createSuccessResponse({ jobId });
     } catch {
-      return {
-        success: false,
-        error: 'Translation failed',
-      };
+      return createErrorResponse('Failed to enqueue translation job');
     }
   }
 
   @Post('bot-response')
   async botResponse(@Body() dto: BotResponseDto) {
+    if (!this.bullmqService) {
+      return createErrorResponse(
+        'AI service not available in test environment'
+      );
+    }
+
     try {
-      const chunks: string[] = [];
-      for await (const chunk of this.openaiService.generateBotResponse(
-        dto.content,
-        dto.botPersonality || 'helpful assistant',
-      )) {
-        chunks.push(chunk);
-      }
-      return {
-        success: true,
-        data: { response: chunks.join('') },
-      };
+      const jobId = await this.bullmqService.addAIJob({
+        type: 'bot-response',
+        text: dto.content,
+        userId: dto.userId,
+        chatId: dto.chatId,
+        botId: dto.botPersonality || 'helpful-assistant',
+      });
+
+      return createSuccessResponse({ jobId });
     } catch {
-      return {
-        success: false,
-        error: 'Bot response failed',
-      };
+      return createErrorResponse('Failed to enqueue bot response job');
     }
   }
 }

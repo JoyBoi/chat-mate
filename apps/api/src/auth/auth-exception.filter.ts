@@ -5,6 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { createErrorResponse } from '@chat-mate/utils';
+import { ErrorCode } from '@chat-mate/types';
 
 @Catch(UnauthorizedException)
 export class AuthExceptionFilter implements ExceptionFilter {
@@ -14,9 +16,10 @@ export class AuthExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
 
     response.status(status).json({
-      success: false,
-      error: 'Unauthorized',
-      message: exception.message || 'Authentication required',
+      ...createErrorResponse(
+        exception.message || 'Authentication required',
+        ErrorCode.UNAUTHORIZED
+      ),
       statusCode: status,
     });
   }

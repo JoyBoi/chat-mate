@@ -73,7 +73,7 @@ export class ChatGateway
   @SubscribeMessage('joinRoom')
   async handleJoinRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: JoinRoomData,
+    @MessageBody() data: JoinRoomData
   ) {
     const { chatId, userId } = data;
     const roomName = `chat:${chatId}`;
@@ -81,7 +81,7 @@ export class ChatGateway
     // Leave previous room if any
     const previousUserInfo = this.connectedUsers.get(client.id);
     if (previousUserInfo) {
-      client.leave(`chat:${previousUserInfo.chatId}`);
+      await client.leave(`chat:${previousUserInfo.chatId}`);
     }
 
     // Join new room
@@ -97,7 +97,7 @@ export class ChatGateway
   @SubscribeMessage('sendMessage')
   handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: MessageData,
+    @MessageBody() data: MessageData
   ) {
     const { chatId, content, userId } = data;
     const roomName = `chat:${chatId}`;
@@ -117,7 +117,7 @@ export class ChatGateway
   @SubscribeMessage('typing')
   handleTyping(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: TypingData,
+    @MessageBody() data: TypingData
   ) {
     const { chatId, userId, isTyping } = data;
     const roomName = `chat:${chatId}`;
@@ -134,7 +134,7 @@ export class ChatGateway
       jobId: string;
       status: string;
       result?: unknown;
-    },
+    }
   ) {
     // Emit to specific chat room
     this.server.to(`chat:${data.chatId}`).emit('ai-job-update', data);
@@ -145,7 +145,7 @@ export class ChatGateway
     chatId: string,
     jobId: string,
     status: string,
-    result?: unknown,
+    result?: unknown
   ) {
     this.server.to(`chat:${chatId}`).emit('jobStatus', {
       jobId,

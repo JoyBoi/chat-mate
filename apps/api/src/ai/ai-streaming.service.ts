@@ -8,7 +8,7 @@ export class AIStreamingService {
 
   constructor(
     private readonly openaiService: OpenAIService,
-    private readonly valkeyService: ValkeyService,
+    private readonly valkeyService: ValkeyService
   ) {}
 
   async processBotResponse(data: {
@@ -22,7 +22,7 @@ export class AIStreamingService {
       const stream = this.openaiService.generateBotResponse(
         data.content,
         data.botPersonality || 'helpful assistant',
-        data.conversationHistory,
+        data.conversationHistory
       );
 
       for await (const chunk of stream) {
@@ -30,7 +30,7 @@ export class AIStreamingService {
           data.chatId,
           data.userId,
           'bot-response',
-          chunk,
+          chunk
         );
       }
 
@@ -38,7 +38,7 @@ export class AIStreamingService {
         data.chatId,
         data.userId,
         'bot-response',
-        '[DONE]',
+        '[DONE]'
       );
     } catch (error) {
       this.logger.error('Bot response processing failed:', error);
@@ -46,7 +46,7 @@ export class AIStreamingService {
         data.chatId,
         data.userId,
         'bot-response',
-        '[ERROR]',
+        '[ERROR]'
       );
     }
   }
@@ -64,7 +64,7 @@ export class AIStreamingService {
           data.chatId,
           data.userId,
           'summarize',
-          chunk,
+          chunk
         );
       }
 
@@ -72,7 +72,7 @@ export class AIStreamingService {
         data.chatId,
         data.userId,
         'summarize',
-        '[DONE]',
+        '[DONE]'
       );
     } catch (error) {
       this.logger.error('Summarization processing failed:', error);
@@ -80,7 +80,7 @@ export class AIStreamingService {
         data.chatId,
         data.userId,
         'summarize',
-        '[ERROR]',
+        '[ERROR]'
       );
     }
   }
@@ -94,7 +94,7 @@ export class AIStreamingService {
     try {
       const stream = this.openaiService.translateText(
         data.content,
-        data.targetLanguage,
+        data.targetLanguage
       );
 
       for await (const chunk of stream) {
@@ -102,7 +102,7 @@ export class AIStreamingService {
           data.chatId,
           data.userId,
           'translate',
-          chunk,
+          chunk
         );
       }
 
@@ -110,7 +110,7 @@ export class AIStreamingService {
         data.chatId,
         data.userId,
         'translate',
-        '[DONE]',
+        '[DONE]'
       );
     } catch (error) {
       this.logger.error('Translation processing failed:', error);
@@ -118,7 +118,7 @@ export class AIStreamingService {
         data.chatId,
         data.userId,
         'translate',
-        '[ERROR]',
+        '[ERROR]'
       );
     }
   }
@@ -127,7 +127,7 @@ export class AIStreamingService {
     chatId: string,
     userId: string,
     type: string,
-    chunk: string,
+    chunk: string
   ) {
     const channel = `ai-stream:${chatId}:${userId}:${type}`;
     await this.valkeyService.getPublisher().publish(channel, chunk);

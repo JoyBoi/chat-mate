@@ -1,23 +1,16 @@
-import { IsOptional, IsString, IsObject } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
+import type { UserProfile } from '@chat-mate/types';
 
-export class CreateUserProfileDto {
-  @IsOptional()
-  @IsString()
-  email?: string;
-
+export class CreateUserProfileDto implements Partial<UserProfile> {
   @IsOptional()
   @IsString()
   displayName?: string;
 
   @IsOptional()
   @IsString()
-  avatarUrl?: string;
+  avatar?: string;
 
   @IsOptional()
   @IsString()
   bio?: string;
-
-  @IsOptional()
-  @IsObject()
-  preferences?: Record<string, any>;
 }

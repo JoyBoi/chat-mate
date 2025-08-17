@@ -27,7 +27,7 @@ class OfflineManager {
   private queue: OfflineMutation[] = [];
   private isOnline: boolean = true;
   private isProcessing = false;
-  private syncInterval?: NodeJS.Timeout;
+  private syncInterval?: ReturnType<typeof setInterval>;
   private readonly STORAGE_KEY = 'offline_mutation_queue';
   private readonly SYNC_INTERVAL = 30000; // 30 seconds
   private readonly MAX_RETRIES = 3;
@@ -112,7 +112,7 @@ class OfflineManager {
   }
 
   public addMutation(
-    mutation: Omit<OfflineMutation, 'id' | 'timestamp' | 'retryCount'>,
+    mutation: Omit<OfflineMutation, 'id' | 'timestamp' | 'retryCount'>
   ): void {
     const offlineMutation: OfflineMutation = {
       ...mutation,
@@ -153,7 +153,7 @@ class OfflineManager {
             processedIds.push(mutation.id);
             console.error(
               `Failed to execute offline mutation after ${mutation.maxRetries} retries:`,
-              error,
+              error
             );
           }
         }
@@ -231,7 +231,7 @@ class OfflineManager {
 let offlineManagerInstance: OfflineManager | null = null;
 
 export const createOfflineManager = (
-  queryClient: QueryClient,
+  queryClient: QueryClient
 ): OfflineManager => {
   if (!offlineManagerInstance) {
     offlineManagerInstance = new OfflineManager(queryClient);
@@ -251,7 +251,7 @@ export const createOfflineMutation = <TData, TVariables>(
     method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
     getRequestData?: (variables: TVariables) => any;
     maxRetries?: number;
-  },
+  }
 ) => {
   return async (variables: TVariables): Promise<TData> => {
     const offlineManager = getOfflineManager();
@@ -289,7 +289,7 @@ export const createOfflineMutation = <TData, TVariables>(
       });
 
       throw new Error(
-        'Offline: Mutation queued for when connection is restored',
+        'Offline: Mutation queued for when connection is restored'
       );
     }
   };

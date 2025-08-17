@@ -2,7 +2,17 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SupabaseService } from '../supabase/supabase.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { RealtimeChannel } from '@supabase/supabase-js';
+import {
+  RealtimeChannel,
+  RealtimePostgresChangesPayload,
+} from '@supabase/supabase-js';
+import {
+  MessagePayload,
+  ChatPayload,
+  ChatParticipantPayload,
+  UserProfilePayload,
+  BotPersonalityPayload,
+} from '../types/supabase-realtime.types';
 
 @Injectable()
 export class RealtimeService {
@@ -12,7 +22,7 @@ export class RealtimeService {
   constructor(
     private configService: ConfigService,
     private supabaseService: SupabaseService,
-    private prismaService: PrismaService,
+    private prismaService: PrismaService
   ) {}
 
   initializeRealtimeChannels() {
@@ -32,8 +42,8 @@ export class RealtimeService {
   }
 
   private setupMessagesChannel() {
-    const channel = this.supabaseService
-      .getClient()
+    const supabaseClient = this.supabaseService.getClient();
+    const channel: RealtimeChannel = supabaseClient
       .channel('messages_changes')
       .on(
         'postgres_changes',
@@ -42,19 +52,21 @@ export class RealtimeService {
           schema: 'public',
           table: 'messages',
         },
-        (payload) => {
+        payload => {
           this.logger.debug('Messages table change detected:', payload);
           void this.handleMessagesChange(payload);
-        },
+        }
       )
-      .subscribe();
+      .subscribe(status => {
+        this.logger.debug(`Messages channel subscription status: ${status}`);
+      });
 
     this.channels.set('messages', channel);
   }
 
   private setupChatsChannel() {
-    const channel = this.supabaseService
-      .getClient()
+    const supabaseClient = this.supabaseService.getClient();
+    const channel: RealtimeChannel = supabaseClient
       .channel('chats_changes')
       .on(
         'postgres_changes',
@@ -63,19 +75,21 @@ export class RealtimeService {
           schema: 'public',
           table: 'chats',
         },
-        (payload) => {
+        payload => {
           this.logger.debug('Chats table change detected:', payload);
           void this.handleChatsChange(payload);
-        },
+        }
       )
-      .subscribe();
+      .subscribe(status => {
+        this.logger.debug(`Chats channel subscription status: ${status}`);
+      });
 
     this.channels.set('chats', channel);
   }
 
   private setupChatParticipantsChannel() {
-    const channel = this.supabaseService
-      .getClient()
+    const supabaseClient = this.supabaseService.getClient();
+    const channel: RealtimeChannel = supabaseClient
       .channel('chat_participants_changes')
       .on(
         'postgres_changes',
@@ -84,22 +98,26 @@ export class RealtimeService {
           schema: 'public',
           table: 'chat_participants',
         },
-        (payload) => {
+        payload => {
           this.logger.debug(
             'Chat participants table change detected:',
-            payload,
+            payload
           );
           void this.handleChatParticipantsChange(payload);
-        },
+        }
       )
-      .subscribe();
+      .subscribe(status => {
+        this.logger.debug(
+          `Chat participants channel subscription status: ${status}`
+        );
+      });
 
     this.channels.set('chat_participants', channel);
   }
 
   private setupUserProfilesChannel() {
-    const channel = this.supabaseService
-      .getClient()
+    const supabaseClient = this.supabaseService.getClient();
+    const channel: RealtimeChannel = supabaseClient
       .channel('user_profiles_changes')
       .on(
         'postgres_changes',
@@ -108,19 +126,23 @@ export class RealtimeService {
           schema: 'public',
           table: 'user_profiles',
         },
-        (payload) => {
+        payload => {
           this.logger.debug('User profiles table change detected:', payload);
           void this.handleUserProfilesChange(payload);
-        },
+        }
       )
-      .subscribe();
+      .subscribe(status => {
+        this.logger.debug(
+          `User profiles channel subscription status: ${status}`
+        );
+      });
 
     this.channels.set('user_profiles', channel);
   }
 
   private setupBotPersonalitiesChannel() {
-    const channel = this.supabaseService
-      .getClient()
+    const supabaseClient = this.supabaseService.getClient();
+    const channel: RealtimeChannel = supabaseClient
       .channel('bot_personalities_changes')
       .on(
         'postgres_changes',
@@ -129,32 +151,42 @@ export class RealtimeService {
           schema: 'public',
           table: 'bot_personalities',
         },
-        (payload) => {
+        payload => {
           this.logger.debug(
             'Bot personalities table change detected:',
-            payload,
+            payload
           );
           void this.handleBotPersonalitiesChange(payload);
-        },
+        }
       )
-      .subscribe();
+      .subscribe(status => {
+        this.logger.debug(
+          `Bot personalities channel subscription status: ${status}`
+        );
+      });
 
     this.channels.set('bot_personalities', channel);
   }
 
-  private handleMessagesChange(payload: any) {
+  private handleMessagesChange(
+    payload: RealtimePostgresChangesPayload<Record<string, any>>
+  ) {
     try {
-      switch (payload.eventType) {
+      const eventType = payload.eventType;
+      const newData = payload.new as MessagePayload | null;
+      const oldData = payload.old as MessagePayload | null;
+
+      switch (eventType) {
         case 'INSERT':
-          this.logger.log(`New message created: ${payload.new.id}`);
+          this.logger.log(`New message created: ${newData?.id}`);
           // Handle message creation logic if needed
           break;
         case 'UPDATE':
-          this.logger.log(`Message updated: ${payload.new.id}`);
+          this.logger.log(`Message updated: ${newData?.id}`);
           // Handle message update logic if needed
           break;
         case 'DELETE':
-          this.logger.log(`Message deleted: ${payload.old.id}`);
+          this.logger.log(`Message deleted: ${oldData?.id}`);
           // Handle message deletion logic if needed
           break;
       }
@@ -163,17 +195,23 @@ export class RealtimeService {
     }
   }
 
-  private handleChatsChange(payload: any) {
+  private handleChatsChange(
+    payload: RealtimePostgresChangesPayload<Record<string, any>>
+  ) {
     try {
-      switch (payload.eventType) {
+      const eventType = payload.eventType;
+      const newData = payload.new as ChatPayload | null;
+      const oldData = payload.old as ChatPayload | null;
+
+      switch (eventType) {
         case 'INSERT':
-          this.logger.log(`New chat created: ${payload.new.id}`);
+          this.logger.log(`New chat created: ${newData?.id}`);
           break;
         case 'UPDATE':
-          this.logger.log(`Chat updated: ${payload.new.id}`);
+          this.logger.log(`Chat updated: ${newData?.id}`);
           break;
         case 'DELETE':
-          this.logger.log(`Chat deleted: ${payload.old.id}`);
+          this.logger.log(`Chat deleted: ${oldData?.id}`);
           break;
       }
     } catch (error) {
@@ -181,22 +219,28 @@ export class RealtimeService {
     }
   }
 
-  private handleChatParticipantsChange(payload: any) {
+  private handleChatParticipantsChange(
+    payload: RealtimePostgresChangesPayload<Record<string, any>>
+  ) {
     try {
-      switch (payload.eventType) {
+      const eventType = payload.eventType;
+      const newData = payload.new as ChatParticipantPayload | null;
+      const oldData = payload.old as ChatParticipantPayload | null;
+
+      switch (eventType) {
         case 'INSERT':
           this.logger.log(
-            `New participant added to chat ${payload.new.chat_id}: ${payload.new.user_id}`,
+            `New participant added to chat ${newData?.chatId}: ${newData?.userId}`
           );
           break;
         case 'UPDATE':
           this.logger.log(
-            `Participant updated in chat ${payload.new.chat_id}: ${payload.new.user_id}`,
+            `Participant updated in chat ${newData?.chatId}: ${newData?.userId}`
           );
           break;
         case 'DELETE':
           this.logger.log(
-            `Participant removed from chat ${payload.old.chat_id}: ${payload.old.user_id}`,
+            `Participant removed from chat ${oldData?.chatId}: ${oldData?.userId}`
           );
           break;
       }
@@ -205,17 +249,23 @@ export class RealtimeService {
     }
   }
 
-  private handleUserProfilesChange(payload: any) {
+  private handleUserProfilesChange(
+    payload: RealtimePostgresChangesPayload<Record<string, any>>
+  ) {
     try {
-      switch (payload.eventType) {
+      const eventType = payload.eventType;
+      const newData = payload.new as UserProfilePayload | null;
+      const oldData = payload.old as UserProfilePayload | null;
+
+      switch (eventType) {
         case 'INSERT':
-          this.logger.log(`New user profile created: ${payload.new.id}`);
+          this.logger.log(`New user profile created: ${newData?.id}`);
           break;
         case 'UPDATE':
-          this.logger.log(`User profile updated: ${payload.new.id}`);
+          this.logger.log(`User profile updated: ${newData?.id}`);
           break;
         case 'DELETE':
-          this.logger.log(`User profile deleted: ${payload.old.id}`);
+          this.logger.log(`User profile deleted: ${oldData?.id}`);
           break;
       }
     } catch (error) {
@@ -223,17 +273,23 @@ export class RealtimeService {
     }
   }
 
-  private handleBotPersonalitiesChange(payload: any) {
+  private handleBotPersonalitiesChange(
+    payload: RealtimePostgresChangesPayload<Record<string, any>>
+  ) {
     try {
-      switch (payload.eventType) {
+      const eventType = payload.eventType;
+      const newData = payload.new as BotPersonalityPayload | null;
+      const oldData = payload.old as BotPersonalityPayload | null;
+
+      switch (eventType) {
         case 'INSERT':
-          this.logger.log(`New bot personality created: ${payload.new.id}`);
+          this.logger.log(`New bot personality created: ${newData?.id}`);
           break;
         case 'UPDATE':
-          this.logger.log(`Bot personality updated: ${payload.new.id}`);
+          this.logger.log(`Bot personality updated: ${newData?.id}`);
           break;
         case 'DELETE':
-          this.logger.log(`Bot personality deleted: ${payload.old.id}`);
+          this.logger.log(`Bot personality deleted: ${oldData?.id}`);
           break;
       }
     } catch (error) {
@@ -241,7 +297,11 @@ export class RealtimeService {
     }
   }
 
-  async syncDataToSupabase(table: string, operation: string, data: any) {
+  async syncDataToSupabase(
+    table: string,
+    operation: string,
+    data: Record<string, unknown>
+  ) {
     try {
       const supabase = this.supabaseService.getClient();
 
@@ -257,7 +317,7 @@ export class RealtimeService {
           const { error: updateError } = await supabase
             .from(table)
             .update(data)
-            .eq('id', data.id);
+            .eq('id', data.id as string);
           if (updateError) throw updateError;
           break;
         }
@@ -265,7 +325,7 @@ export class RealtimeService {
           const { error: deleteError } = await supabase
             .from(table)
             .delete()
-            .eq('id', data.id);
+            .eq('id', data.id as string);
           if (deleteError) throw deleteError;
           break;
         }
@@ -280,7 +340,10 @@ export class RealtimeService {
     }
   }
 
-  async validateDataConsistency(table: string, localData: any[]) {
+  async validateDataConsistency(
+    table: string,
+    localData: Record<string, unknown>[]
+  ) {
     try {
       const supabase = this.supabaseService.getClient();
       const { data: remoteData, error } = await supabase
@@ -292,13 +355,13 @@ export class RealtimeService {
       // Compare local and remote data
       const inconsistencies = this.findDataInconsistencies(
         localData,
-        remoteData,
+        (remoteData as Record<string, unknown>[]) || []
       );
 
       if (inconsistencies.length > 0) {
         this.logger.warn(
           `Data inconsistencies found in ${table}:`,
-          inconsistencies,
+          inconsistencies
         );
         return { consistent: false, inconsistencies };
       }
@@ -308,18 +371,23 @@ export class RealtimeService {
     } catch (error) {
       this.logger.error(
         `Failed to validate data consistency for ${table}:`,
-        error,
+        error
       );
       throw error;
     }
   }
 
-  private findDataInconsistencies(localData: any[], remoteData: any[]) {
-    const inconsistencies: any[] = [];
+  private findDataInconsistencies(
+    localData: Record<string, unknown>[],
+    remoteData: Record<string, unknown>[]
+  ) {
+    const inconsistencies: Record<string, unknown>[] = [];
 
     // Create maps for efficient comparison
-    const localMap = new Map(localData.map((item) => [item.id, item]));
-    const remoteMap = new Map(remoteData.map((item) => [item.id, item]));
+    const localMap = new Map(localData.map(item => [item.id as string, item]));
+    const remoteMap = new Map(
+      remoteData.map(item => [item.id as string, item])
+    );
 
     // Check for items in local but not in remote
     for (const [id, localItem] of localMap) {
@@ -342,7 +410,7 @@ export class RealtimeService {
         });
       } else {
         // Check for data differences
-        const localItem = localMap.get(id);
+        const localItem = localMap.get(id) as Record<string, unknown>;
         if (JSON.stringify(localItem) !== JSON.stringify(remoteItem)) {
           inconsistencies.push({
             type: 'data_mismatch',
@@ -362,8 +430,12 @@ export class RealtimeService {
       const supabase = this.supabaseService.getClient();
 
       for (const [name, channel] of this.channels) {
-        await supabase.removeChannel(channel);
-        this.logger.log(`Removed realtime channel: ${name}`);
+        const result = await supabase.removeChannel(channel);
+        if (result === 'ok') {
+          this.logger.log(`Removed realtime channel: ${name}`);
+        } else {
+          this.logger.warn(`Failed to remove realtime channel: ${name}`);
+        }
       }
 
       this.channels.clear();
@@ -378,8 +450,8 @@ export class RealtimeService {
 
     for (const [name, channel] of this.channels) {
       status[name] = {
-        state: (channel as { state: string }).state,
-        topic: (channel as { topic: string }).topic,
+        state: channel.state || 'unknown',
+        topic: channel.topic || 'unknown',
       };
     }
 

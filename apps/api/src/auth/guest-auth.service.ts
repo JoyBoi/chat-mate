@@ -23,10 +23,11 @@ export interface GuestUser {
 export class GuestAuthService {
   private readonly GUEST_TOKEN_TTL = 60 * 60 * 2; // 2 hours
   private readonly guestSessions = new Map<string, GuestUser>();
+  private readonly deviceToUser = new Map<string, string>(); // deviceId -> userId
 
   constructor(
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   createGuestToken(): { token: string; user: GuestUser } {
@@ -75,8 +76,80 @@ export class GuestAuthService {
     return this.guestSessions.get(guestId) || null;
   }
 
+  findByDeviceId(deviceId: string): GuestUser | null {
+    const userId = this.deviceToUser.get(deviceId);
+    if (!userId) {
+      return null;
+    }
+    return this.guestSessions.get(userId) || null;
+  }
+
+  createGuestTokenWithDevice(
+    displayName: string,
+    deviceId: string
+  ): { token: string; user: GuestUser } {
+    const guestId = `guest_${uuidv4()}`;
+    const sessionId = uuidv4();
+
+    const user: GuestUser = {
+      id: guestId,
+      type: 'guest',
+      sessionId,
+      displayName,
+      createdAt: new Date(),
+    };
+
+    // Store guest session and device mapping
+    this.guestSessions.set(guestId, user);
+    this.deviceToUser.set(deviceId, guestId);
+
+    const payload: Omit<GuestTokenPayload, 'iat' | 'exp'> = {
+      sub: guestId,
+      type: 'guest',
+      sessionId,
+    };
+
+    const token = this.jwtService.sign(payload, {
+      expiresIn: this.GUEST_TOKEN_TTL,
+    });
+
+    // Clean up expired sessions periodically
+    this.scheduleSessionCleanup(guestId);
+
+    return { token, user };
+  }
+
+  refreshGuestToken(user: GuestUser): { token: string; user: GuestUser } {
+    // Generate new session ID for security
+    const newSessionId = uuidv4();
+    const updatedUser = {
+      ...user,
+      sessionId: newSessionId,
+    };
+
+    // Update stored user
+    this.guestSessions.set(user.id, updatedUser);
+
+    const payload: Omit<GuestTokenPayload, 'iat' | 'exp'> = {
+      sub: user.id,
+      type: 'guest',
+      sessionId: newSessionId,
+    };
+
+    const token = this.jwtService.sign(payload, {
+      expiresIn: this.GUEST_TOKEN_TTL,
+    });
+
+    return { token, user: updatedUser };
+  }
+
   revokeGuestSession(guestId: string): boolean {
     return this.guestSessions.delete(guestId);
+  }
+
+  clearAllSessions(): void {
+    this.guestSessions.clear();
+    this.deviceToUser.clear();
   }
 
   private generateGuestDisplayName(): string {

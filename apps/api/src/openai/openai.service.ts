@@ -29,7 +29,7 @@ export class OpenAIService {
       model?: string;
       temperature?: number;
       maxTokens?: number;
-    },
+    }
   ): AsyncGenerator<string, void, unknown> {
     try {
       const stream = await this.openai.chat.completions.create({
@@ -73,7 +73,7 @@ export class OpenAIService {
 
   translateText(
     text: string,
-    targetLanguage: string,
+    targetLanguage: string
   ): AsyncGenerator<string, void, unknown> {
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
       {
@@ -95,7 +95,7 @@ export class OpenAIService {
   generateBotResponse(
     userMessage: string,
     botPersonality: string,
-    conversationHistory?: string[],
+    conversationHistory?: string[]
   ): AsyncGenerator<string, void, unknown> {
     const systemPrompt = this.getBotSystemPrompt(botPersonality);
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [

@@ -7,30 +7,15 @@ import {
 } from 'zustand/middleware';
 import { appStorage } from '../lib/storage';
 import { zustandDevtoolsConfig } from '../lib/devtools';
+import type {
+  ChatRoom,
+  BotPersonality,
+  TypingUser,
+  ChatMessage,
+} from '@chat-mate/types';
 
-export interface TypingUser {
-  userId: string;
-  username: string;
-  timestamp: number;
-}
-
-export interface ChatRoom {
-  id: string;
-  name: string;
-  description?: string;
-  isPrivate: boolean;
-  memberCount: number;
-  lastActivity: string;
-}
-
-export interface BotPersonality {
-  id: string;
-  name: string;
-  description: string;
-  avatar?: string;
-  personality: string;
-  isActive: boolean;
-}
+// Re-export shared types for convenience
+export type { ChatRoom, BotPersonality, TypingUser, ChatMessage };
 
 export interface ChatUIState {
   // Current chat context
@@ -39,11 +24,13 @@ export interface ChatUIState {
   selectedBotId: string | null;
 
   // UI state
+  isUIVisible: boolean;
   isTyping: boolean;
   typingUsers: Record<string, TypingUser>;
   isConnected: boolean;
   isLoading: boolean;
   error: string | null;
+  lastActivity: Date | null;
 
   // Modal states
   isBotSelectorVisible: boolean;
@@ -56,7 +43,10 @@ export interface ChatUIState {
 
   // Actions
   setCurrentChat: (chatId: string | null, room?: ChatRoom) => void;
+  clearCurrentChat: () => void;
   setSelectedBot: (botId: string | null) => void;
+  setUIVisible: (visible: boolean) => void;
+  toggleUI: () => void;
   setTyping: (isTyping: boolean) => void;
   addTypingUser: (user: TypingUser) => void;
   removeTypingUser: (userId: string) => void;
@@ -65,10 +55,13 @@ export interface ChatUIState {
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
   setMessageInput: (input: string) => void;
+  clearMessageInput: () => void;
   setComposing: (isComposing: boolean) => void;
   setBotSelectorVisible: (visible: boolean) => void;
   setRoomListVisible: (visible: boolean) => void;
   setUserListVisible: (visible: boolean) => void;
+  updateLastActivity: (date: Date) => void;
+  reset: () => void;
   clearAll: () => void;
 }
 
@@ -80,11 +73,13 @@ export const useChatStore = create<ChatUIState>()(
         currentChatId: null,
         currentChatRoom: null,
         selectedBotId: null,
+        isUIVisible: true,
         isTyping: false,
         typingUsers: {},
         isConnected: false,
         isLoading: false,
         error: null,
+        lastActivity: null,
         isBotSelectorVisible: false,
         isRoomListVisible: false,
         isUserListVisible: false,
@@ -100,8 +95,21 @@ export const useChatStore = create<ChatUIState>()(
           });
         },
 
+        clearCurrentChat: () => {
+          set({ currentChatId: null, currentChatRoom: null });
+        },
+
         setSelectedBot: (botId: string | null) => {
           set({ selectedBotId: botId });
+        },
+
+        setUIVisible: (visible: boolean) => {
+          set({ isUIVisible: visible });
+        },
+
+        toggleUI: () => {
+          const { isUIVisible } = get();
+          set({ isUIVisible: !isUIVisible });
         },
 
         setTyping: (isTyping: boolean) => {
@@ -145,6 +153,10 @@ export const useChatStore = create<ChatUIState>()(
           set({ messageInput: input });
         },
 
+        clearMessageInput: () => {
+          set({ messageInput: '' });
+        },
+
         setComposing: (isComposing: boolean) => {
           set({ isComposing });
         },
@@ -159,6 +171,30 @@ export const useChatStore = create<ChatUIState>()(
 
         setUserListVisible: (visible: boolean) => {
           set({ isUserListVisible: visible });
+        },
+
+        updateLastActivity: (date: Date) => {
+          set({ lastActivity: date });
+        },
+
+        reset: () => {
+          set({
+            currentChatId: null,
+            currentChatRoom: null,
+            selectedBotId: null,
+            isUIVisible: true,
+            isTyping: false,
+            typingUsers: {},
+            isConnected: false,
+            isLoading: false,
+            error: null,
+            lastActivity: null,
+            isBotSelectorVisible: false,
+            isRoomListVisible: false,
+            isUserListVisible: false,
+            messageInput: '',
+            isComposing: false,
+          });
         },
 
         clearAll: () => {
@@ -186,20 +222,20 @@ export const useChatStore = create<ChatUIState>()(
               setItem: (key: string, value: string) =>
                 appStorage.set(key, value),
               removeItem: (key: string) => appStorage.delete(key),
-            }) as StateStorage,
+            }) as StateStorage
         ),
         partialize: state => ({
           currentChatId: state.currentChatId,
           currentChatRoom: state.currentChatRoom,
           selectedBotId: state.selectedBotId,
         }),
-      },
+      }
     ),
     {
       enabled: zustandDevtoolsConfig.enabled,
       name: 'Chat Store',
-    },
-  ),
+    }
+  )
 );
 
 // Selector hooks
@@ -255,14 +291,3 @@ export const useBotSelection = () =>
     setSelectedBot: state.setSelectedBot,
     setBotSelectorVisible: state.setBotSelectorVisible,
   }));
-
-// Export ChatMessage type (define it based on common chat message structure)
-export interface ChatMessage {
-  id: string;
-  content: string;
-  userId: string;
-  username: string;
-  timestamp: string;
-  type?: 'user' | 'bot' | 'system';
-  botId?: string;
-}

@@ -8,11 +8,11 @@ interface AuthContextType {
   loading: boolean;
   signIn: (
     email: string,
-    password: string,
+    password: string
   ) => Promise<{ error: AuthError | null }>;
   signUp: (
     email: string,
-    password: string,
+    password: string
   ) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<{ error: AuthError | null }>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
@@ -38,16 +38,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
     const getInitialSession = async () => {
       try {
         const {
           data: { session },
+          error,
         } = await supabase.auth.getSession();
-        setSession(session);
-        setUser(session?.user ?? null);
+        if (error) {
+          // Log only errors in production
+          if (__DEV__) console.error('[AUTH] Error in getSession():', error);
+        } else {
+          setSession(session);
+          setUser(session?.user ?? null);
+        }
       } catch (error) {
-        console.error('Error getting initial session:', error);
+        if (__DEV__) console.error('[AUTH] Exception in getSession():', error);
       } finally {
         setLoading(false);
       }
@@ -55,7 +60,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     void getInitialSession();
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -64,7 +68,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
@@ -74,7 +80,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email,
         password,
       });
+
+      if (error && __DEV__) {
+        console.error('[AUTH] Sign-in failed:', error.message);
+      }
+
       return { error };
+    } catch (exception) {
+      if (__DEV__) console.error('[AUTH] Exception during sign-in:', exception);
+      return { error: exception as AuthError };
     } finally {
       setLoading(false);
     }
@@ -87,7 +101,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email,
         password,
       });
+
+      if (error && __DEV__) {
+        console.error('[AUTH] Sign-up failed:', error.message);
+      }
+
       return { error };
+    } catch (exception) {
+      if (__DEV__) console.error('[AUTH] Exception during sign-up:', exception);
+      return { error: exception as AuthError };
     } finally {
       setLoading(false);
     }
@@ -97,15 +119,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signOut();
+
+      if (error && __DEV__) {
+        console.error('[AUTH] Sign-out failed:', error.message);
+      }
+
       return { error };
+    } catch (exception) {
+      if (__DEV__)
+        console.error('[AUTH] Exception during sign-out:', exception);
+      return { error: exception as AuthError };
     } finally {
       setLoading(false);
     }
   };
 
   const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
-    return { error };
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+      if (error && __DEV__) {
+        console.error('[AUTH] Password reset failed:', error.message);
+      }
+
+      return { error };
+    } catch (exception) {
+      if (__DEV__)
+        console.error('[AUTH] Exception during password reset:', exception);
+      return { error: exception as AuthError };
+    } finally {
+      setLoading(false);
+    }
   };
 
   const value: AuthContextType = {

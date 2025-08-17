@@ -18,7 +18,7 @@ export class UsersService {
 
   async createOrUpdateProfile(
     userId: string,
-    createUserProfileDto: CreateUserProfileDto,
+    createUserProfileDto: CreateUserProfileDto
   ) {
     // First ensure user exists
     await this.prisma.user.upsert({
@@ -26,7 +26,7 @@ export class UsersService {
       update: {},
       create: {
         id: userId,
-        email: createUserProfileDto.email ?? '',
+        email: `guest_${userId}@guest.local`,
       },
     });
 
@@ -40,17 +40,13 @@ export class UsersService {
       updateData.displayName = createUserProfileDto.displayName;
       createData.displayName = createUserProfileDto.displayName;
     }
-    if (createUserProfileDto.avatarUrl !== undefined) {
-      updateData.avatar = createUserProfileDto.avatarUrl;
-      createData.avatar = createUserProfileDto.avatarUrl;
+    if (createUserProfileDto.avatar !== undefined) {
+      updateData.avatar = createUserProfileDto.avatar;
+      createData.avatar = createUserProfileDto.avatar;
     }
     if (createUserProfileDto.bio !== undefined) {
       updateData.bio = createUserProfileDto.bio;
       createData.bio = createUserProfileDto.bio;
-    }
-    if (createUserProfileDto.preferences !== undefined) {
-      updateData.preferences = createUserProfileDto.preferences;
-      createData.preferences = createUserProfileDto.preferences;
     }
 
     return await this.prisma.userProfile.upsert({

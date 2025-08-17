@@ -80,10 +80,21 @@ model BotPersonality {
   avatar      String?
   category    String?
   isActive    Boolean  @default(true) @map("is_active")
+  isFeatured  Boolean  @default(false) @map("is_featured")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("bot_personalities")
+}
+
+model FeaturedBotRotation {
+  id        String   @id @default(uuid())
+  weekStart DateTime @map("week_start")
+  botIds    String[] @map("bot_ids")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([weekStart])
+  @@map("featured_bot_rotations")
 }
 
 enum ChatType {
@@ -105,4 +116,14 @@ enum MessageType {
   FILE
   SYSTEM
   BOT_RESPONSE
+}
+
+enum BotCategory {
+  ENTERTAINMENT
+  EDUCATIONAL
+  PRODUCTIVITY
+  CREATIVE
+  TECHNICAL
+  HISTORICAL
+  COMEDY
 }

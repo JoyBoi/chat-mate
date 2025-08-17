@@ -18,12 +18,12 @@ const createStorageConfig = (id: string, encryptionKey: string) => {
 const authStorage = new MMKV(
   createStorageConfig(
     'auth-storage',
-    'auth-encryption-key-change-in-production',
-  ),
+    'auth-encryption-key-change-in-production'
+  )
 );
 
 const appStorage = new MMKV(
-  createStorageConfig('app-storage', 'app-encryption-key-change-in-production'),
+  createStorageConfig('app-storage', 'app-encryption-key-change-in-production')
 );
 
 // Web-specific storage adapter for guest/recruiter access
@@ -178,7 +178,13 @@ export const AppPreferences = {
   // Recently used emojis
   getRecentEmojis: (): string[] => {
     const emojis = getAppStorageValue('recent_emojis');
-    return emojis ? (JSON.parse(emojis) as string[]) : [];
+    if (!emojis) return [];
+
+    try {
+      return JSON.parse(emojis) as string[];
+    } catch {
+      return [];
+    }
   },
   addRecentEmoji: (emoji: string) => {
     const recent = AppPreferences.getRecentEmojis();
@@ -193,7 +199,7 @@ export const AppPreferences = {
       try {
         // Clear only app-prefixed keys to avoid affecting other web apps
         const keys = Object.keys(localStorage).filter(key =>
-          key.startsWith('app_'),
+          key.startsWith('app_')
         );
         keys.forEach(key => localStorage.removeItem(key));
       } catch {

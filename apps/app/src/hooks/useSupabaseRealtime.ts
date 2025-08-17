@@ -21,6 +21,7 @@ export const useSupabaseRealtime = (options: UseSupabaseRealtimeOptions) => {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
+
   const {
     table,
     filter,
@@ -29,6 +30,10 @@ export const useSupabaseRealtime = (options: UseSupabaseRealtimeOptions) => {
     onDelete,
     enabled = true,
   } = options;
+
+  // Store callbacks in refs to avoid dependency issues
+  const callbacksRef = useRef({ onInsert, onUpdate, onDelete });
+  callbacksRef.current = { onInsert, onUpdate, onDelete };
 
   useEffect(() => {
     if (!enabled || !user) {
@@ -57,16 +62,16 @@ export const useSupabaseRealtime = (options: UseSupabaseRealtimeOptions) => {
 
             switch (payload.eventType) {
               case 'INSERT':
-                onInsert?.(payload);
+                callbacksRef.current.onInsert?.(payload);
                 break;
               case 'UPDATE':
-                onUpdate?.(payload);
+                callbacksRef.current.onUpdate?.(payload);
                 break;
               case 'DELETE':
-                onDelete?.(payload);
+                callbacksRef.current.onDelete?.(payload);
                 break;
             }
-          },
+          }
         );
 
         // Subscribe and handle connection status
@@ -100,16 +105,16 @@ export const useSupabaseRealtime = (options: UseSupabaseRealtimeOptions) => {
     return () => {
       if (channelRef.current) {
         console.log(`Unsubscribing from ${table} realtime changes`);
-        supabase.removeChannel(channelRef.current);
+        void supabase.removeChannel(channelRef.current);
         channelRef.current = null;
         setIsConnected(false);
       }
     };
-  }, [enabled, user, table, filter, onInsert, onUpdate, onDelete]);
+  }, [enabled, user, table, filter]);
 
   const reconnect = () => {
     if (channelRef.current) {
-      supabase.removeChannel(channelRef.current);
+      void supabase.removeChannel(channelRef.current);
       channelRef.current = null;
     }
     setError(null);

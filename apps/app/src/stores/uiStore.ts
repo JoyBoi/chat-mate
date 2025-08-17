@@ -29,7 +29,7 @@ export interface UIState {
   hideError: () => void;
   showToast: (
     message: string,
-    type?: 'success' | 'error' | 'info' | 'warning',
+    type?: 'success' | 'error' | 'info' | 'warning'
   ) => void;
   hideToast: () => void;
   setActiveModal: (modalId: string | null) => void;
@@ -109,13 +109,13 @@ export const useUIStore = create<UIState>()(
         partialize: state => ({
           activeModal: state.activeModal,
         }),
-      },
+      }
     ),
     {
       enabled: zustandDevtoolsConfig.enabled,
       name: 'UI Store',
-    },
-  ),
+    }
+  )
 );
 
 // Selector hooks

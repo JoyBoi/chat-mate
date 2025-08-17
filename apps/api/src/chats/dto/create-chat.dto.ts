@@ -1,15 +1,30 @@
-import { IsString, IsOptional, IsEnum } from 'class-validator';
-import { ChatType } from '@prisma/client';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsArray,
+  IsBoolean,
+} from 'class-validator';
+import type { CreateChatRequest } from '@chat-mate/types';
 
-export class CreateChatDto {
+export class CreateChatDto implements CreateChatRequest {
+  @IsOptional()
   @IsString()
-  name!: string;
+  name?: string;
 
   @IsOptional()
   @IsString()
   description?: string;
 
+  @IsEnum(['direct', 'group', 'bot'])
+  type!: 'direct' | 'group' | 'bot';
+
   @IsOptional()
-  @IsEnum(ChatType)
-  type?: ChatType;
+  @IsBoolean()
+  isPrivate?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  participantIds?: string[];
 }

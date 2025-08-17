@@ -1,4 +1,5 @@
 import React from 'react';
+import { ViewStyle } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 
 // Simple SVG content for each character (placeholder - you can replace with actual SVG content)
@@ -35,7 +36,7 @@ const SVG_CONTENT = {
 interface BotAvatarProps {
   botId: string;
   size?: number;
-  style?: any;
+  style?: ViewStyle;
 }
 
 export const BotAvatar: React.FC<BotAvatarProps> = ({

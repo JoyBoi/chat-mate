@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
@@ -7,28 +7,26 @@ import { HomeScreen } from './src/screens/HomeScreen';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { Loading } from './src/components/Loading';
 import { queryClient } from './src/lib/queryClient';
-import { shouldEnableDevtools } from './src/lib/devtools';
-import { Platform } from 'react-native';
 import './global.css';
 
-// Lazy load DevTools for web only
-const DevTools = React.lazy(() =>
-  import('@tanstack/react-query-devtools').then(module => ({
-    default: module.ReactQueryDevtools,
-  })),
-);
+// DevTools temporarily disabled due to module resolution issues
+// const DevTools = React.lazy(() =>
+//   import('@tanstack/react-query-devtools').then(module => ({
+//     default: module.ReactQueryDevtools,
+//   })),
+// );
 
 const AppContent: React.FC = () => {
   const { session, loading } = useAuth();
 
   if (loading) {
-    return <Loading message="Initializing..." />;
+    return <Loading message='Initializing...' />;
   }
 
   return (
     <>
       {session ? <HomeScreen /> : <AuthScreen />}
-      <StatusBar style="auto" />
+      <StatusBar style='auto' />
     </>
   );
 };
@@ -40,11 +38,12 @@ export default function App() {
         <AuthProvider>
           <AppContent />
         </AuthProvider>
-        {Platform.OS === 'web' && shouldEnableDevtools() && (
+        {/* DevTools temporarily disabled */}
+        {/* {Platform.OS === 'web' && shouldEnableDevtools() && (
           <Suspense fallback={null}>
             <DevTools initialIsOpen={false} />
           </Suspense>
-        )}
+        )} */}
       </QueryClientProvider>
     </ErrorBoundary>
   );

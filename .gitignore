@@ -318,4 +318,24 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# Competitive advantage - Character & Prompt Data
+# These files contain proprietary bot personalities and prompts
+# that represent significant R&D investment and competitive advantage
+apps/api/prisma/seed.ts
+apps/api/prisma/seed.js
+apps/api/prisma/seeds/
+character-relationship-matrix.md
+data/characters/
+data/prompts/
+data/personalities/
+*.character.json
+*.prompt.json
+*.personality.json
+bot-data/
+character-data/
+prompt-data/
+**/seed-data/
+**/character-prompts/
+**/bot-personalities/
+
 # End of https://www.toptal.com/developers/gitignore

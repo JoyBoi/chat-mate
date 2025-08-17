@@ -2,13 +2,25 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Prisma } from '@prisma/client';
+
+// import { Cron, CronExpression } from '@nestjs/schedule';
 
 interface SyncResult {
   success: boolean;
   synced: number;
   errors: string[];
 }
+
+interface DataInconsistency {
+  type: 'missing_remote' | 'missing_local' | 'data_mismatch';
+  id: string;
+  localItem?: Record<string, unknown>;
+}
+
+type MessageData = Prisma.MessageCreateInput;
+type ChatData = Prisma.ChatCreateInput;
+type UserProfileData = Prisma.UserProfileCreateInput;
 
 @Injectable()
 export class SyncService implements OnModuleInit {
@@ -18,19 +30,22 @@ export class SyncService implements OnModuleInit {
   constructor(
     private configService: ConfigService,
     private prismaService: PrismaService,
-    private realtimeService: RealtimeService,
+    private realtimeService: RealtimeService
   ) {}
 
-  async onModuleInit() {
+  onModuleInit() {
     try {
       // Initialize realtime channels for bi-directional sync
       this.realtimeService.initializeRealtimeChannels();
 
+      // Temporarily disabled due to Supabase permission issues
       // Perform initial data consistency check
-      await this.performInitialSync();
+      // await this.performInitialSync();
 
       this.isInitialized = true;
-      this.logger.log('Sync service initialized successfully');
+      this.logger.log(
+        'Sync service initialized successfully (consistency checks disabled)'
+      );
     } catch (error) {
       this.logger.error('Failed to initialize sync service:', error);
     }
@@ -61,24 +76,42 @@ export class SyncService implements OnModuleInit {
 
   private async checkTableConsistency(tableName: string) {
     try {
-      let localData: any[] = [];
+      let localData: Record<string, unknown>[] = [];
 
       // Get local data based on table name
       switch (tableName) {
         case 'messages':
-          localData = await this.prismaService.message.findMany();
+          localData = (await this.prismaService.message.findMany()) as Record<
+            string,
+            unknown
+          >[];
           break;
         case 'chats':
-          localData = await this.prismaService.chat.findMany();
+          localData = (await this.prismaService.chat.findMany()) as Record<
+            string,
+            unknown
+          >[];
           break;
         case 'chat_participants':
-          localData = await this.prismaService.chatParticipant.findMany();
+          localData =
+            (await this.prismaService.chatParticipant.findMany()) as Record<
+              string,
+              unknown
+            >[];
           break;
         case 'user_profiles':
-          localData = await this.prismaService.userProfile.findMany();
+          localData =
+            (await this.prismaService.userProfile.findMany()) as Record<
+              string,
+              unknown
+            >[];
           break;
         case 'bot_personalities':
-          localData = await this.prismaService.botPersonality.findMany();
+          localData =
+            (await this.prismaService.botPersonality.findMany()) as Record<
+              string,
+              unknown
+            >[];
           break;
         default:
           this.logger.warn(`Unknown table: ${tableName}`);
@@ -88,16 +121,19 @@ export class SyncService implements OnModuleInit {
       // Validate consistency with remote database
       const result = await this.realtimeService.validateDataConsistency(
         tableName,
-        localData,
+        localData
       );
 
       if (!result.consistent) {
         this.logger.warn(
           `Data inconsistencies found in ${tableName}:`,
-          result.inconsistencies,
+          result.inconsistencies
         );
         // Handle inconsistencies if needed
-        await this.resolveInconsistencies(tableName, result.inconsistencies);
+        await this.resolveInconsistencies(
+          tableName,
+          result.inconsistencies as unknown as DataInconsistency[]
+        );
       } else {
         this.logger.log(`Data consistency validated for ${tableName}`);
       }
@@ -108,33 +144,35 @@ export class SyncService implements OnModuleInit {
 
   private async resolveInconsistencies(
     tableName: string,
-    inconsistencies: any[],
+    inconsistencies: DataInconsistency[]
   ) {
     try {
       this.logger.log(
-        `Resolving ${inconsistencies.length} inconsistencies in ${tableName}`,
+        `Resolving ${inconsistencies.length} inconsistencies in ${tableName}`
       );
 
       for (const inconsistency of inconsistencies) {
         switch (inconsistency.type) {
           case 'missing_remote':
             // Local data exists but not in remote - sync to remote
-            await this.realtimeService.syncDataToSupabase(
-              tableName,
-              'INSERT',
-              inconsistency.localItem,
-            );
+            if (inconsistency.localItem) {
+              await this.realtimeService.syncDataToSupabase(
+                tableName,
+                'INSERT',
+                inconsistency.localItem
+              );
+            }
             break;
           case 'missing_local':
             // Remote data exists but not locally - this should be handled by realtime subscriptions
             this.logger.log(
-              `Remote data will be synced via realtime: ${inconsistency.id}`,
+              `Remote data will be synced via realtime: ${inconsistency.id}`
             );
             break;
           case 'data_mismatch':
             // Data exists in both but differs - use remote as source of truth
             this.logger.log(
-              `Data mismatch detected for ${inconsistency.id}, remote will be used as source of truth`,
+              `Data mismatch detected for ${inconsistency.id}, remote will be used as source of truth`
             );
             break;
         }
@@ -144,32 +182,33 @@ export class SyncService implements OnModuleInit {
     } catch (error) {
       this.logger.error(
         `Error resolving inconsistencies for ${tableName}:`,
-        error,
+        error
       );
     }
   }
 
   // Periodic consistency check (every 5 minutes)
-  @Cron(CronExpression.EVERY_5_MINUTES)
-  async performPeriodicSync() {
+  // TODO: Temporarily disabled due to Supabase permission issues
+  // @Cron(CronExpression.EVERY_5_MINUTES)
+  performPeriodicSync() {
     if (!this.isInitialized) {
       return;
     }
 
     try {
       this.logger.debug('Performing periodic data consistency check...');
-      await this.performInitialSync();
+      // await this.performInitialSync();
     } catch (error) {
       this.logger.error('Error during periodic sync:', error);
     }
   }
 
-  async syncMessageToSupabase(messageData: any): Promise<SyncResult> {
+  async syncMessageToSupabase(messageData: MessageData): Promise<SyncResult> {
     try {
       await this.realtimeService.syncDataToSupabase(
         'messages',
         'INSERT',
-        messageData,
+        messageData
       );
       return { success: true, synced: 1, errors: [] };
     } catch (error) {
@@ -182,12 +221,12 @@ export class SyncService implements OnModuleInit {
     }
   }
 
-  async syncChatToSupabase(chatData: any): Promise<SyncResult> {
+  async syncChatToSupabase(chatData: ChatData): Promise<SyncResult> {
     try {
       await this.realtimeService.syncDataToSupabase(
         'chats',
         'INSERT',
-        chatData,
+        chatData
       );
       return { success: true, synced: 1, errors: [] };
     } catch (error) {
@@ -200,12 +239,14 @@ export class SyncService implements OnModuleInit {
     }
   }
 
-  async syncUserProfileToSupabase(userProfileData: any): Promise<SyncResult> {
+  async syncUserProfileToSupabase(
+    userProfileData: UserProfileData
+  ): Promise<SyncResult> {
     try {
       await this.realtimeService.syncDataToSupabase(
         'user_profiles',
         'INSERT',
-        userProfileData,
+        userProfileData
       );
       return { success: true, synced: 1, errors: [] };
     } catch (error) {

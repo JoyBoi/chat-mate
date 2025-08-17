@@ -4,9 +4,14 @@ import { appStorage } from './storage';
 import { getOfflineManager } from './offlineManager';
 
 // Custom retry function with exponential backoff
-const retryFunction = (failureCount: number, error: any) => {
+const retryFunction = (failureCount: number, error: unknown) => {
   // Don't retry on 4xx errors (client errors)
-  if (error?.response?.status >= 400 && error?.response?.status < 500) {
+  const errorWithResponse = error as { response?: { status?: number } };
+  if (
+    errorWithResponse?.response?.status &&
+    errorWithResponse.response.status >= 400 &&
+    errorWithResponse.response.status < 500
+  ) {
     return false;
   }
 
@@ -14,17 +19,22 @@ const retryFunction = (failureCount: number, error: any) => {
   return failureCount < 3;
 };
 
-// Custom error handler
-const errorHandler = (error: any) => {
-  console.error('React Query Error:', error);
+import { handleError } from './error-handler';
 
-  // Log structured error for debugging
+// Custom error handler using centralized approach
+const errorHandler = (error: unknown) => {
+  // Use centralized error handling but don't show alerts for query errors
+  const appError = handleError(
+    error,
+    {
+      additionalData: { source: 'react-query' },
+    },
+    false
+  );
+
+  // Log for debugging in development
   if (__DEV__) {
-    console.log('Error details:', {
-      message: error?.message,
-      status: error?.response?.status,
-      data: error?.response?.data,
-    });
+    console.error('React Query Error:', appError);
   }
 };
 
@@ -43,11 +53,11 @@ const createPersister = () => {
       restoreClient: () => {
         try {
           const cached = localStorage.getItem('react-query-cache');
-          return cached ? JSON.parse(cached) : undefined;
+          return cached ? (JSON.parse(cached) as unknown) : undefined;
         } catch (error) {
           console.warn(
             'Failed to restore query cache from localStorage:',
-            error,
+            error
           );
           return undefined;
         }
@@ -58,7 +68,7 @@ const createPersister = () => {
         } catch (error) {
           console.warn(
             'Failed to remove query cache from localStorage:',
-            error,
+            error
           );
         }
       },
@@ -77,7 +87,7 @@ const createPersister = () => {
     restoreClient: () => {
       try {
         const cached = appStorage.getString('react-query-cache');
-        return cached ? JSON.parse(cached) : undefined;
+        return cached ? (JSON.parse(cached) as unknown) : undefined;
       } catch (error) {
         console.warn('Failed to restore query cache from MMKV:', error);
         return undefined;
@@ -142,13 +152,16 @@ export const queryKeys = {
   bots: {
     all: ['bots'] as const,
     active: ['bots', 'active'] as const,
-    list: (filters?: any) => ['bots', 'list', filters] as const,
+    featured: ['bots', 'featured'] as const,
+    nonFeatured: ['bots', 'non-featured'] as const,
+    list: (filters?: Record<string, unknown>) =>
+      ['bots', 'list', filters] as const,
     detail: (id: string) => ['bots', 'detail', id] as const,
   },
   // Messages
   messages: {
     all: ['messages'] as const,
-    list: (chatId: string, filters?: any) =>
+    list: (chatId: string, filters?: Record<string, unknown>) =>
       ['messages', 'list', chatId, filters] as const,
     infinite: (chatId: string) => ['messages', 'infinite', chatId] as const,
     detail: (id: string) => ['messages', 'detail', id] as const,
@@ -171,7 +184,8 @@ export const queryKeys = {
   // Chat rooms (alias for compatibility)
   chatRooms: {
     all: ['chatRooms'] as const,
-    list: (filters?: any) => ['chatRooms', 'list', filters] as const,
+    list: (filters?: Record<string, unknown>) =>
+      ['chatRooms', 'list', filters] as const,
     detail: (id: string) => ['chatRooms', 'detail', id] as const,
     members: (id: string) => ['chatRooms', 'members', id] as const,
   },
@@ -181,24 +195,26 @@ export const queryKeys = {
 export const invalidateQueries = {
   messages: (chatId?: string) => {
     if (chatId) {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: queryKeys.messages.list(chatId),
       });
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: queryKeys.messages.infinite(chatId),
       });
     } else {
-      queryClient.invalidateQueries({ queryKey: queryKeys.messages.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.messages.all });
     }
   },
   bots: () => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.bots.all });
+    void queryClient.invalidateQueries({ queryKey: queryKeys.bots.all });
   },
   chats: (userId?: string) => {
     if (userId) {
-      queryClient.invalidateQueries({ queryKey: queryKeys.chats.list(userId) });
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.chats.list(userId),
+      });
     } else {
-      queryClient.invalidateQueries({ queryKey: queryKeys.chats.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.chats.all });
     }
   },
 };

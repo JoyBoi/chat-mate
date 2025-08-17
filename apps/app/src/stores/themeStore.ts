@@ -49,7 +49,7 @@ const applyTheme = (theme: Theme): boolean => {
   if (typeof document !== 'undefined') {
     document.documentElement.setAttribute(
       'data-theme',
-      isDark ? 'dark' : 'light',
+      isDark ? 'dark' : 'light'
     );
   }
 
@@ -96,7 +96,7 @@ export const useThemeStore = create<ThemeState>()(
               setItem: (key: string, value: string) =>
                 appStorage.set(key, value),
               removeItem: (key: string) => appStorage.delete(key),
-            }) as StateStorage,
+            }) as StateStorage
         ),
         partialize: state => ({
           theme: state.theme,
@@ -107,13 +107,13 @@ export const useThemeStore = create<ThemeState>()(
             state.setTheme(state.theme);
           }
         },
-      },
+      }
     ),
     {
       enabled: zustandDevtoolsConfig.enabled,
       name: 'Theme Store',
-    },
-  ),
+    }
+  )
 );
 
 // Selector hooks

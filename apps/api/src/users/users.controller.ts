@@ -10,12 +10,11 @@ import {
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { CreateUserProfileDto } from './dto/create-user-profile.dto';
+import { createSuccessResponse } from '@chat-mate/utils';
+import type { AuthUser } from '@chat-mate/types';
 
 interface AuthenticatedRequest extends Request {
-  user: {
-    userId: string;
-    email?: string;
-  };
+  user: AuthUser;
 }
 
 @Controller('api/v1/users')
@@ -25,18 +24,19 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Request() req: AuthenticatedRequest) {
-    return await this.usersService.findUserWithProfile(req.user.userId);
+    const user = await this.usersService.findUserWithProfile(req.user.id);
+    return createSuccessResponse(user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('profile')
   async createOrUpdateProfile(
     @Request() req: AuthenticatedRequest,
-    @Body() createUserProfileDto: CreateUserProfileDto,
+    @Body() createUserProfileDto: CreateUserProfileDto
   ) {
     return await this.usersService.createOrUpdateProfile(
-      req.user.userId,
-      createUserProfileDto,
+      req.user.id,
+      createUserProfileDto
     );
   }
 

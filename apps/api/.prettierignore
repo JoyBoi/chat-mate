@@ -1,0 +1,13 @@
+# Generated files
+test/generated/
+prisma/generated/
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Coverage
+coverage/

@@ -5,14 +5,46 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { CreateChatDto } from './dto/create-chat.dto';
-import { ChatType, MessageType } from '@prisma/client';
+import type { CreateChatRequest, ApiResponse } from '@chat-mate/types';
+import { ChatType, MessageType, Prisma } from '@prisma/client';
+
+import { createSuccessResponse } from '@chat-mate/utils';
+
+// Type definitions for service responses
+export interface ChatData {
+  id: string;
+  name: string | null;
+  type: string;
+  createdAt: Date;
+  updatedAt: Date;
+  messages?: MessageData[];
+  participants?: any[];
+  lastMessage?: any;
+}
+
+export interface MessageData {
+  id: string;
+  content: string;
+  chatId: string;
+  senderId: string;
+  type: string;
+  metadata: any;
+  createdAt: Date;
+  updatedAt: Date;
+  sender?: any;
+}
+
+export interface BotChatResponse {
+  userMessage: MessageData;
+  botMessage: MessageData;
+  chat: ChatData;
+}
 
 @Injectable()
 export class ChatsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getUserChats(userId: string) {
+  async getUserChats(userId: string): Promise<ApiResponse<ChatData[]>> {
     const chats = await this.prisma.chat.findMany({
       where: {
         participants: {
@@ -63,30 +95,50 @@ export class ChatsService {
       },
     });
 
-    return {
-      success: true,
-      data: chats,
-    };
+    return createSuccessResponse(chats);
   }
 
-  async createChat(userId: string, createChatDto: CreateChatDto) {
+  async createChat(
+    userId: string,
+    createChatDto: CreateChatRequest
+  ): Promise<ApiResponse<ChatData>> {
     const { name, type } = createChatDto;
 
-    if (!name) {
-      throw new Error('Chat name is required');
+    // Only require name for group and bot chats
+    if (!name && (type === 'group' || type === 'bot')) {
+      throw new Error('Chat name is required for group and bot chats');
     }
 
+    // Map shared type to Prisma enum
+    const chatType =
+      type === 'direct'
+        ? ChatType.DIRECT
+        : type === 'group'
+          ? ChatType.GROUP
+          : type === 'bot'
+            ? ChatType.BOT
+            : ChatType.DIRECT;
+
+    // Create chat first
     const chat = await this.prisma.chat.create({
       data: {
         name,
-        type: type ?? ChatType.DIRECT,
-        participants: {
-          create: {
-            userId,
-            role: 'OWNER',
-          },
-        },
+        type: chatType,
       },
+    });
+
+    // Then create participant
+    await this.prisma.chatParticipant.create({
+      data: {
+        chatId: chat.id,
+        userId,
+        role: 'OWNER',
+      },
+    });
+
+    // Fetch the complete chat with participants
+    const completeChat = await this.prisma.chat.findUnique({
+      where: { id: chat.id },
       include: {
         participants: {
           include: {
@@ -107,13 +159,17 @@ export class ChatsService {
       },
     });
 
-    return {
-      success: true,
-      data: chat,
-    };
+    if (!completeChat) {
+      throw new Error('Failed to create chat');
+    }
+
+    return createSuccessResponse(completeChat);
   }
 
-  async getChatMessages(chatId: string, userId: string) {
+  async getChatMessages(
+    chatId: string,
+    userId: string
+  ): Promise<ApiResponse<MessageData[]>> {
     // Verify user has access to this chat
     const participant = await this.prisma.chatParticipant.findFirst({
       where: {
@@ -154,21 +210,18 @@ export class ChatsService {
       },
     });
 
-    return {
-      success: true,
-      data: messages,
-    };
+    return createSuccessResponse(messages);
   }
 
   async sendMessage(
     chatId: string,
     userId: string,
-    createMessageDto: CreateMessageDto,
-  ) {
+    createMessageDto: CreateMessageDto
+  ): Promise<ApiResponse<MessageData>> {
     // Ensure user exists in database (for guest users)
     await this.prisma.user.upsert({
       where: { id: userId },
-      update: {},
+      update: {} as Prisma.UserUpdateInput,
       create: {
         id: userId,
         email: userId.startsWith('guest_') ? `${userId}@guest.local` : '',
@@ -192,7 +245,7 @@ export class ChatsService {
       throw new ForbiddenException('Access denied to this chat');
     }
 
-    const { content, type, metadata } = createMessageDto;
+    const { content, messageType, metadata } = createMessageDto;
 
     if (!content) {
       throw new Error('Message content is required');
@@ -203,8 +256,15 @@ export class ChatsService {
         content,
         chatId,
         senderId: userId,
-        type: type ?? MessageType.TEXT,
-        metadata: metadata ?? {},
+        type:
+          messageType === 'text'
+            ? MessageType.TEXT
+            : messageType === 'image'
+              ? MessageType.IMAGE
+              : messageType === 'file'
+                ? MessageType.FILE
+                : MessageType.TEXT,
+        metadata: (metadata ?? {}) as Prisma.InputJsonValue,
       },
       include: {
         sender: {
@@ -228,13 +288,10 @@ export class ChatsService {
       data: { updatedAt: new Date() },
     });
 
-    return {
-      success: true,
-      data: message,
-    };
+    return createSuccessResponse(message);
   }
 
-  async getGlobalChat() {
+  async getGlobalChat(): Promise<ApiResponse<ChatData>> {
     let globalChat = await this.prisma.chat.findFirst({
       where: {
         type: ChatType.GLOBAL,
@@ -294,16 +351,13 @@ export class ChatsService {
       });
     }
 
-    return {
-      success: true,
-      data: {
-        ...globalChat,
-        messages: globalChat.messages.reverse(),
-      },
-    };
+    return createSuccessResponse({
+      ...globalChat,
+      messages: globalChat.messages.reverse(),
+    });
   }
 
-  async getActiveBots() {
+  async getActiveBots(): Promise<ApiResponse<any[]>> {
     const bots = await this.prisma.botPersonality.findMany({
       where: {
         isActive: true,
@@ -319,17 +373,14 @@ export class ChatsService {
       },
     });
 
-    return {
-      success: true,
-      data: bots,
-    };
+    return createSuccessResponse(bots);
   }
 
   async chatWithBot(
     botId: string,
     userId: string,
-    createMessageDto: CreateMessageDto,
-  ) {
+    createMessageDto: CreateMessageDto
+  ): Promise<ApiResponse<BotChatResponse>> {
     // Get bot personality
     const bot = await this.prisma.botPersonality.findUnique({
       where: { id: botId, isActive: true },
@@ -423,7 +474,7 @@ export class ChatsService {
     const botResponse = await this.generateBotResponse(
       bot,
       content,
-      recentMessages.reverse(),
+      recentMessages.reverse()
     );
 
     // Save bot response
@@ -440,23 +491,20 @@ export class ChatsService {
       },
     });
 
-    return {
-      success: true,
-      data: {
-        userMessage,
-        botMessage: {
-          ...botMessage,
-          sender: {
-            id: botId,
-            profile: {
-              displayName: bot.name,
-              avatar: bot.avatar,
-            },
+    return createSuccessResponse({
+      userMessage,
+      botMessage: {
+        ...botMessage,
+        sender: {
+          id: botId,
+          profile: {
+            displayName: bot.name,
+            avatar: bot.avatar,
           },
         },
-        chat: botChat,
       },
-    };
+      chat: botChat,
+    });
   }
 
   private async generateBotResponse(
@@ -473,7 +521,7 @@ export class ChatsService {
           displayName?: string | null;
         } | null;
       } | null;
-    }>,
+    }>
   ): Promise<string> {
     // Get other active bots for cross-references
     const otherBots = await this.prisma.botPersonality.findMany({
@@ -489,7 +537,7 @@ export class ChatsService {
 
     // Build context with chat history
     const context = chatHistory
-      .map((msg) => {
+      .map(msg => {
         const senderName = msg.sender?.profile?.displayName ?? 'User';
         return `${senderName}: ${msg.content}`;
       })
@@ -500,7 +548,7 @@ export class ChatsService {
 
 **RELATIONSHIP AWARENESS:**
 You are aware of these other AI personalities in the ChatMate ecosystem: ${otherBots
-      .map((b) => `${b.name} (${b.description})`)
+      .map(b => `${b.name} (${b.description})`)
       .join(', ')}.
 
 When relevant to the conversation, you may reference these characters based on your established relationships and shared experiences from your backstory. Stay true to your personality while acknowledging these connections naturally.
@@ -518,14 +566,14 @@ Respond as ${bot.name}, staying true to your personality and relationships:`;
     return this.generateSimpleBotResponse(
       bot.name,
       userMessage,
-      enhancedPrompt,
+      enhancedPrompt
     );
   }
 
   private generateSimpleBotResponse(
     botName: string,
     userMessage: string,
-    prompt: string,
+    prompt: string
   ): string {
     // This is a placeholder implementation
     // In production, you would integrate with OpenAI, Claude, or another AI service
@@ -580,5 +628,93 @@ Respond as ${bot.name}, staying true to your personality and relationships:`;
     ];
 
     return botResponses[Math.floor(Math.random() * botResponses.length)];
+  }
+
+  async getChatById(
+    chatId: string,
+    userId: string
+  ): Promise<ApiResponse<ChatData>> {
+    const chat = await this.prisma.chat.findUnique({
+      where: { id: chatId },
+      include: {
+        participants: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                profile: {
+                  select: {
+                    displayName: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          include: {
+            sender: {
+              select: {
+                id: true,
+                profile: {
+                  select: {
+                    displayName: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!chat) {
+      throw new NotFoundException('Chat not found');
+    }
+
+    const isParticipant = chat.participants?.some(
+      participant => participant.userId === userId
+    );
+
+    if (!isParticipant) {
+      throw new ForbiddenException('You do not have access to this chat');
+    }
+
+    return createSuccessResponse(chat);
+  }
+
+  async deleteChat(
+    chatId: string,
+    userId: string
+  ): Promise<ApiResponse<{ message: string }>> {
+    // Check if chat exists and user is a participant
+    const chat = await this.prisma.chat.findFirst({
+      where: {
+        id: chatId,
+        participants: {
+          some: {
+            userId,
+          },
+        },
+      },
+    });
+
+    if (!chat) {
+      throw new NotFoundException('Chat not found');
+    }
+
+    // Delete the chat (this will cascade delete participants and messages)
+    await this.prisma.chat.delete({
+      where: {
+        id: chatId,
+      },
+    });
+
+    return createSuccessResponse({
+      message: 'Chat deleted successfully',
+    });
   }
 }

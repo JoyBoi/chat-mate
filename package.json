@@ -4,24 +4,38 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "pnpm run --parallel dev",
-    "dev:api": "pnpm --filter @chat-mate/api run start:dev",
-    "dev:app": "pnpm --filter @chat-mate/app run start",
-    "build": "pnpm run --recursive build",
-    "build:api": "pnpm --filter @chat-mate/api run build",
-    "build:app": "pnpm --filter @chat-mate/app run build",
-    "lint": "pnpm run --recursive lint",
-    "test": "pnpm run --recursive test",
-    "clean": "pnpm run --recursive clean",
-    "type-check": "pnpm run --recursive type-check",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore"
+    "build": "pnpm run build:packages && pnpm run build:api && pnpm run build:app",
+    "build:packages": "pnpm --filter @chat-mate/types build && pnpm --filter @chat-mate/utils build",
+    "build:api": "pnpm --filter @chat-mate/api build",
+    "build:app": "pnpm --filter @chat-mate/app build",
+    "dev": "pnpm --parallel --filter @chat-mate/api --filter @chat-mate/app dev",
+    "dev:api": "pnpm --filter @chat-mate/api dev",
+    "dev:app": "pnpm --filter @chat-mate/app dev",
+    "lint": "pnpm --recursive lint",
+    "format": "pnpm --recursive format",
+    "format:check": "pnpm --recursive format:check",
+    "type-check": "pnpm --recursive type-check",
+    "test": "pnpm --recursive test",
+    "test:unit": "pnpm --recursive test",
+    "test:integration": "pnpm --filter @chat-mate/api test:integration",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:ui": "vitest --ui --coverage",
+    "coverage:merge": "nyc merge coverage coverage/merged.json && nyc report --reporter=html --reporter=text --temp-dir=coverage",
+    "clean": "pnpm --recursive clean",
+    "run:app:ios": "pnpm --filter @chat-mate/app run ios",
+    "run:app:droid": "pnpm --filter @chat-mate/app run android",
+    "android": "pnpx expo run:android",
+    "ios": "pnpx expo run:ios"
   },
   "devDependencies": {
     "@types/compression": "^1.8.1",
     "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/ui": "^2.1.9",
+    "nyc": "^17.1.0",
     "prettier": "^3.6.2",
-    "typescript": "~5.8.3"
+    "typescript": "~5.8.3",
+    "vitest": "^2.1.8"
   },
   "keywords": [],
   "author": "",
@@ -34,9 +48,18 @@
   "pnpm": {
     "overrides": {
       "ip": "1.1.9"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@prisma/client",
+      "@prisma/engines",
+      "@scarf/scarf",
+      "msgpackr-extract",
+      "nestjs-pino",
+      "prisma",
+      "unrs-resolver"
+    ]
   },
   "type": "module",
-  "private": true,
-  "dependencies": {}
+  "private": true
 }

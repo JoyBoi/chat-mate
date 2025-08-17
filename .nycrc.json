@@ -1,0 +1,34 @@
+{
+  "all": true,
+  "check-coverage": true,
+  "reporter": ["html", "text", "lcov", "json"],
+  "report-dir": "coverage",
+  "temp-dir": "coverage/.nyc_output",
+  "branches": 75,
+  "lines": 75,
+  "functions": 75,
+  "statements": 75,
+  "include": [
+    "apps/*/src/**/*.ts",
+    "apps/*/src/**/*.tsx",
+    "packages/*/src/**/*.ts"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.e2e-spec.ts",
+    "**/*.cy.ts",
+    "**/*.cy.tsx",
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/coverage/**",
+    "**/e2e/**",
+    "**/cypress/**",
+    "**/*.config.*",
+    "**/*.setup.*",
+    "**/main.ts",
+    "**/index.ts"
+  ]
+}

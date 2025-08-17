@@ -1,15 +1,21 @@
 import { IsString, IsOptional, IsEnum, IsObject } from 'class-validator';
-import { MessageType } from '@prisma/client';
+import type { SendMessageRequest } from '@chat-mate/types';
 
-export class CreateMessageDto {
+export class CreateMessageDto
+  implements Omit<SendMessageRequest, 'chatRoomId'>
+{
   @IsString()
   content!: string;
 
   @IsOptional()
-  @IsEnum(MessageType)
-  type?: MessageType;
+  @IsEnum(['text', 'image', 'file'])
+  messageType?: 'text' | 'image' | 'file';
 
   @IsOptional()
   @IsObject()
   metadata?: Record<string, any>;
+
+  @IsOptional()
+  @IsString()
+  parentMessageId?: string;
 }
