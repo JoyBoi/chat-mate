@@ -35,6 +35,7 @@ model UserProfile {
 model Chat {
   id           String            @id @default(uuid())
   name         String?
+  description  String?
   type         ChatType          @default(DIRECT)
   createdAt    DateTime          @default(now()) @map("created_at")
   updatedAt    DateTime          @updatedAt @map("updated_at")
@@ -80,20 +81,19 @@ model BotPersonality {
   avatar      String?
   category    String?
   isActive    Boolean  @default(true) @map("is_active")
-  isFeatured  Boolean  @default(false) @map("is_featured")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
+  isFeatured  Boolean  @default(false) @map("is_featured")
 
   @@map("bot_personalities")
 }
 
 model FeaturedBotRotation {
   id        String   @id @default(uuid())
-  weekStart DateTime @map("week_start")
+  weekStart DateTime @unique @map("week_start")
   botIds    String[] @map("bot_ids")
   createdAt DateTime @default(now()) @map("created_at")
 
-  @@unique([weekStart])
   @@map("featured_bot_rotations")
 }
 
